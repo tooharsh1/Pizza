@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wireless &amp; Mobile Communication Lab – All Codes</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f7f7f5;--fg:#1d1d1b;--mut:#6b6b66;--card:#fff;--bd:#dcdcd6;--acc:#2f5fd0;--accfg:#fff;--code:#f1f1ed}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161618;--fg:#ecece8;--mut:#a0a09a;--card:#1f1f22;--bd:#34343a;--acc:#6f95f0;--accfg:#101014;--code:#121214}}
+:root[data-theme="dark"]{--bg:#161618;--fg:#ecece8;--mut:#a0a09a;--card:#1f1f22;--bd:#34343a;--acc:#6f95f0;--accfg:#101014;--code:#121214}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:960px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.35rem;margin:0 0 4px}
+.sub{color:var(--mut);margin:0 0 16px;font-size:.9rem}
+nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px}
+nav a{flex:none;padding:7px 13px;border:1px solid var(--bd);border-radius:999px;background:var(--card);color:var(--fg);text-decoration:none;font-size:.9rem}
+nav a.on{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
+h2{font-size:1.1rem;margin:0 0 12px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+.row code{font:13px ui-monospace,Menlo,Consolas,monospace;overflow-x:auto;white-space:nowrap}
+button{flex:none;font:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:1px solid var(--acc);background:var(--acc);color:var(--accfg);cursor:pointer}
+.bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.bar span{color:var(--mut);font-size:.85rem}
+pre{margin:0;background:var(--code);border:1px solid var(--bd);border-radius:10px;padding:14px;overflow-x:auto;max-height:70vh;font:12.5px/1.5 ui-monospace,Menlo,Consolas,monospace}
+.note{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px;color:var(--mut)}
+
+/* Theory experiment presentation */
+.theory{display:grid;gap:14px;margin-top:10px}.theory section{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px}.theory h3{font-size:1rem;margin:0 0 8px}.theory h4{font-size:.94rem;margin:12px 0 5px}.theory p{margin:6px 0}.theory ul,.theory ol{margin:6px 0;padding-left:22px}.theory table{width:100%;border-collapse:collapse;font-size:.9rem;margin:8px 0}.theory th,.theory td{padding:8px;border:1px solid var(--bd);text-align:left;vertical-align:top}.theory th{background:var(--code)}.theory .aim{border-left:4px solid var(--acc)}.theory .diagram{width:100%;height:auto;display:block;max-width:820px;margin:10px auto;color:var(--fg);overflow:visible}.theory .diagram text{font-family:Arial,Helvetica,sans-serif;paint-order:stroke;stroke-width:0;letter-spacing:.1px}.theory .diagram [fill="currentColor"]{fill:var(--fg)}.theory .diagram [stroke="currentColor"]{stroke:var(--fg)}.theory .diagram text{color:var(--fg);stroke:none!important;font-family:Arial,Helvetica,sans-serif;font-weight:500}.theory .diagram text[font-weight="bold"]{font-weight:700}.theory .diagram ::selection{background:transparent;color:#203044}.theory .conclusion{background:var(--code)}.theory .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:var(--code);font-size:.8rem;color:var(--mut)}
+@media(max-width:600px){.theory section{padding:12px}.theory table{font-size:.78rem}.theory th,.theory td{padding:6px}}
+
+
+/* Viva question section */
+.viva-section{margin-top:14px;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px}
+.viva-section h3{font-size:1rem;margin:0 0 5px}
+.viva-intro{color:var(--mut);font-size:.88rem;margin:0 0 10px}
+.viva-item{border-top:1px solid var(--bd);padding:10px 0}
+.viva-question{font-weight:700;color:var(--fg);margin:0 0 5px}
+.viva-answer{margin:8px 0 0;color:var(--fg);padding-left:3px}
+
+</style>
+</head>
+<body>
+<main>
+<h1>Wireless &amp; Mobile Communication Lab – All Codes</h1>
+<p class="sub">Pick an experiment, then copy.</p>
+<nav id="nav"></nav>
+<section id="view"></section>
+</main>
+
+<script type="text/plain" id="src-exp2">
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import hilbert
+from scipy.special import erfc
+
+rng = np.random.default_rng(42)
+
+fs = 1000
+t = np.linspace(0, 1, fs)
+fc = 50
+fm = 5
+message = np.sin(2 * np.pi * fm * t)
+
+
+def am_transmit(msg):
+    carrier = np.sin(2 * np.pi * fc * t)
+    return (1 + msg) * carrier
+
+
+def am_receive(rx):
+    envelope = np.abs(hilbert(rx))
+    return envelope - np.mean(envelope)
+
+
+# ================= EXPERIMENT 1: Noise sweep on the analog AM chain =================
+print("=" * 60)
+print("EXPERIMENT 1: Noise sweep on the analog AM chain")
+print("=" * 60)
+
+tx_signal = am_transmit(message)
+signal_power = np.mean(tx_signal ** 2)
+
+noise_levels_demo = [0.05, 0.3, 1.0]
+fig, axes = plt.subplots(len(noise_levels_demo), 2, figsize=(12, 8), sharex=True)
+
+for row, sigma in enumerate(noise_levels_demo):
+    noise = rng.normal(0, sigma, len(t))
+    rx_signal = tx_signal + noise
+    recovered = am_receive(rx_signal)
+    snr_db = 10 * np.log10(signal_power / sigma**2)
+    print(f"  noise std = {sigma:>5.2f} -> SNR = {snr_db:6.2f} dB")
+
+    axes[row, 0].plot(t, rx_signal, lw=0.6, color="tab:gray")
+    axes[row, 0].set_title(f"Received signal, noise std = {sigma} (SNR = {snr_db:.1f} dB)")
+    axes[row, 1].plot(t, message, "k--", lw=1, label="original")
+    axes[row, 1].plot(t, recovered, color="tab:blue", lw=1, label="recovered")
+    axes[row, 1].set_title(f"Recovered message, noise std = {sigma}")
+    axes[row, 1].legend(loc="upper right", fontsize=8)
+
+axes[-1, 0].set_xlabel("Time (s)")
+axes[-1, 1].set_xlabel("Time (s)")
+fig.suptitle("Experiment 1a: Recovered-signal degradation as noise increases")
+fig.tight_layout()
+fig.savefig("exp1_noise_sweep_waveforms.png", dpi=150)
+
+# ---- Experiment 1b: SNR vs noise level, and recovery quality ----
+noise_sweep = np.linspace(0.02, 1.2, 30)
+snr_sweep_db = 10 * np.log10(signal_power / noise_sweep**2)
+quality = []
+for sigma in noise_sweep:
+    rx = tx_signal + rng.normal(0, sigma, len(t))
+    rec = am_receive(rx)
+    quality.append(np.corrcoef(message, rec)[0, 1])
+
+fig, ax1 = plt.subplots(figsize=(8, 5))
+ax1.plot(noise_sweep, snr_sweep_db, "o-", color="tab:blue", label="SNR (dB)")
+ax1.set_xlabel("Noise standard deviation")
+ax1.set_ylabel("SNR (dB)", color="tab:blue")
+ax1.tick_params(axis="y", labelcolor="tab:blue")
+ax2 = ax1.twinx()
+ax2.plot(noise_sweep, quality, "s--", color="tab:red",
+         label="Correlation (recovered vs original)")
+ax2.set_ylabel("Recovery quality (correlation)", color="tab:red")
+ax2.tick_params(axis="y", labelcolor="tab:red")
+plt.title("Experiment 1b: SNR vs noise level, and recovery quality")
+fig.tight_layout()
+fig.savefig("exp1_snr_vs_noise.png", dpi=150)
+
+# ================= EXPERIMENT 2: Modulation-scheme comparison =================
+print("\n" + "=" * 60)
+print("EXPERIMENT 2: Modulation-scheme comparison")
+print("=" * 60)
+
+sigma_analog = 0.5
+kf = 30.0
+phase = 2 * np.pi * fc * t + 2 * np.pi * kf * np.cumsum(message) / fs
+fm_tx = np.cos(phase)
+
+noise = rng.normal(0, sigma_analog, len(t))
+am_rx = am_transmit(message) + noise
+fm_rx = fm_tx + noise
+
+am_rec = am_receive(am_rx)
+
+analytic = hilbert(fm_rx)
+inst_phase = np.unwrap(np.angle(analytic))
+inst_freq = np.diff(inst_phase) * fs / (2 * np.pi)
+fm_rec = (inst_freq - fc) / kf
+fm_rec = fm_rec - np.mean(fm_rec)
+win = 25
+fm_rec_smooth = np.convolve(fm_rec, np.ones(win) / win, mode="same")
+
+am_corr = np.corrcoef(message, am_rec)[0, 1]
+fm_corr = np.corrcoef(message[:-1], fm_rec_smooth)[0, 1]
+print(f"  AM recovery correlation at noise std {sigma_analog}: {am_corr:.3f}")
+print(f"  FM recovery correlation at noise std {sigma_analog}: {fm_corr:.3f}")
+
+fig, axes = plt.subplots(3, 1, figsize=(10, 8), sharex=True)
+axes[0].plot(t, message, "k")
+axes[0].set_title("Original message (5 Hz tone)")
+axes[1].plot(t, am_rec, color="tab:blue")
+axes[1].set_title(f"AM + envelope detection (corr = {am_corr:.3f})")
+axes[2].plot(t[:-1], fm_rec_smooth, color="tab:green")
+axes[2].set_title(f"FM + phase-derivative detection (corr = {fm_corr:.3f})")
+axes[2].set_xlabel("Time (s)")
+fig.suptitle(f"Experiment 2a: AM vs FM at the same noise level (std = {sigma_analog})")
+fig.tight_layout()
+fig.savefig("exp2_am_vs_fm.png", dpi=150)
+
+
+def digital_ber(num_bits, snr_db, scheme):
+    bits = rng.integers(0, 2, num_bits)
+    if scheme == "PSK":
+        symbols = 2 * bits - 1.0
+        avg_energy = 1.0
+        threshold = 0.0
+    elif scheme == "ASK":
+        amp = np.sqrt(2.0)
+        symbols = bits * amp
+        avg_energy = 1.0
+        threshold = amp / 2
+    else:
+        raise ValueError(scheme)
+    snr_linear = 10 ** (snr_db / 10)
+    noise_std = np.sqrt(avg_energy / (2 * snr_linear))
+    received = symbols + rng.normal(0, noise_std, num_bits)
+    detected = (received > threshold).astype(int)
+    return np.mean(detected != bits)
+
+
+num_bits_cmp = 200_000
+snr_range_db = np.arange(0, 13, 1)
+ber_ask = [digital_ber(num_bits_cmp, s, "ASK") for s in snr_range_db]
+ber_psk = [digital_ber(num_bits_cmp, s, "PSK") for s in snr_range_db]
+
+plt.figure(figsize=(7, 5))
+plt.semilogy(snr_range_db, ber_ask, "s-", label="ASK (on-off keying)")
+plt.semilogy(snr_range_db, ber_psk, "o-", label="PSK (BPSK)")
+plt.xlabel("Average SNR (dB)")
+plt.ylabel("Bit Error Rate")
+plt.title("Experiment 2b: ASK vs PSK noise resistance")
+plt.grid(True, which="both", alpha=0.4)
+plt.legend()
+plt.tight_layout()
+plt.savefig("exp2_ask_vs_psk.png", dpi=150)
+
+print(f"  At 8 dB: ASK BER = {ber_ask[8]:.2e}, PSK BER = {ber_psk[8]:.2e}")
+print("  -> PSK is more robust: its two states are +1/-1 (maximum separation),")
+print("     while ASK 'wastes' half the decision distance by turning one state off.")
+
+# ================= EXPERIMENT 3: BER vs SNR with QPSK extension =================
+print("\n" + "=" * 60)
+print("EXPERIMENT 3: BER vs SNR (1,000,000 bits) with QPSK extension")
+print("=" * 60)
+
+
+def bpsk_ber(num_bits, snr_db):
+    bits = rng.integers(0, 2, num_bits)
+    symbols = 2 * bits - 1.0
+    snr_linear = 10 ** (snr_db / 10)
+    noise = rng.normal(0, np.sqrt(1 / (2 * snr_linear)), num_bits)
+    detected = (symbols + noise > 0).astype(int)
+    return np.mean(detected != bits)
+
+
+def qpsk_ber(num_bits, snr_db):
+    num_bits -= num_bits % 2
+    bits = rng.integers(0, 2, num_bits)
+    i_bits, q_bits = bits[0::2], bits[1::2]
+    i_sym = (2 * i_bits - 1) / np.sqrt(2)
+    q_sym = (2 * q_bits - 1) / np.sqrt(2)
+    snr_linear = 10 ** (snr_db / 10)
+    noise_std = np.sqrt(1 / (2 * snr_linear))
+    i_rx = i_sym + rng.normal(0, noise_std, len(i_sym))
+    q_rx = q_sym + rng.normal(0, noise_std, len(q_sym))
+    det = np.empty(num_bits, dtype=int)
+    det[0::2] = (i_rx > 0).astype(int)
+    det[1::2] = (q_rx > 0).astype(int)
+    return np.mean(det != bits)
+
+
+num_bits_big = 1_000_000
+snr_range_db = np.arange(0, 13, 1)
+snr_linear = 10 ** (snr_range_db / 10)
+ber_bpsk = [bpsk_ber(num_bits_big, s) for s in snr_range_db]
+ber_qpsk = [qpsk_ber(num_bits_big, s) for s in snr_range_db]
+theory_bpsk = 0.5 * erfc(np.sqrt(snr_linear))
+theory_qpsk = 0.5 * erfc(np.sqrt(snr_linear / 2))
+
+plt.figure(figsize=(8, 5.5))
+plt.semilogy(snr_range_db, ber_bpsk, "o", color="tab:blue", label="BPSK (simulated, 1e6 bits)")
+plt.semilogy(snr_range_db, theory_bpsk, "-", color="tab:blue", alpha=0.6, label="BPSK (theory)")
+plt.semilogy(snr_range_db, ber_qpsk, "s", color="tab:orange", label="QPSK (simulated, 1e6 bits)")
+plt.semilogy(snr_range_db, theory_qpsk, "-", color="tab:orange", alpha=0.6, label="QPSK (theory)")
+plt.xlabel("SNR per symbol, Es/N0 (dB)")
+plt.ylabel("Bit Error Rate")
+plt.title("Experiment 3: BER vs SNR – BPSK vs QPSK (2x data rate)")
+plt.grid(True, which="both", alpha=0.4)
+plt.ylim(1e-6, 1)
+plt.legend()
+plt.tight_layout()
+plt.savefig("exp3_ber_bpsk_qpsk.png", dpi=150)
+
+for s in (4, 8, 12):
+    idx = int(np.where(snr_range_db == s)[0][0])
+    print(f"  SNR {s:2d} dB: BPSK BER = {ber_bpsk[idx]:.2e}   QPSK BER = {ber_qpsk[idx]:.2e}")
+print("QPSK carries 2 bits/symbol (double the data rate) but needs ~3 dB")
+print("more symbol SNR for the same BER: the classic rate-vs-reliability tradeoff.")
+
+plt.show()
+</script>
+
+<script type="text/plain" id="src-exp8">
+import hmac
+import hashlib
+import secrets
+
+# 128-bit secret key stored in SIM
+KI = bytes.fromhex("00112233445566778899AABBCCDDEEFF")
+
+
+# A3 generates 32-bit SRES for authentication
+def A3_authentication(ki, rand):
+    return hmac.new(ki, b"A3" + rand, hashlib.sha256).digest()[:4]
+
+
+# A8 generates 64-bit session key Kc
+def A8_key_generation(ki, rand):
+    return hmac.new(ki, b"A8" + rand, hashlib.sha256).digest()[:8]
+
+
+# A5 performs encryption and decryption using XOR
+def A5_encrypt(data, kc):
+    keystream = bytearray()
+    counter = 0
+
+    # Generate required keystream
+    while len(keystream) < len(data):
+        block = hashlib.sha256(
+            kc + counter.to_bytes(4, "big")
+        ).digest()
+        keystream.extend(block)
+        counter += 1
+
+    # XOR data with keystream
+    return bytes(a ^ b for a, b in zip(data, keystream))
+
+
+print("=" * 60)
+print("              GSM SECURITY SIMULATION")
+print("=" * 60)
+print("Ki (SIM Secret Key):", KI.hex().upper())
+
+session = 1
+
+while True:
+    print("\n" + "-" * 60)
+    print(f"                    SESSION {session}")
+    print("-" * 60)
+
+    # Random challenge
+    print("\n[1] RANDOM CHALLENGE (RAND)")
+    RAND = secrets.token_bytes(8)
+    print("RAND          :", RAND.hex().upper())
+
+    # A3 authentication
+    print("\n[2] A3 AUTHENTICATION")
+    generated_sres = A3_authentication(KI, RAND)
+
+    # Simulate received SRES
+    received_sres = generated_sres
+
+    print("Generated SRES:", generated_sres.hex().upper())
+    print("Received SRES :", received_sres.hex().upper())
+
+    if hmac.compare_digest(generated_sres, received_sres):
+        print("Authentication: SUCCESS")
+    else:
+        print("Authentication: FAILURE")
+        continue
+
+    # A8 key generation
+    print("\n[3] A8 KEY GENERATION")
+    kc = A8_key_generation(KI, RAND)
+    print("Generated Kc  :", kc.hex().upper())
+
+    # Get message from user
+    print("\n[4] MESSAGE INPUT")
+    message = input("Enter message to encrypt (or 'exit' to stop): ")
+
+    if message.lower() == "exit":
+        print("\nGSM SIMULATION STOPPED.")
+        break
+
+    plaintext = message.encode("utf-8")
+    plaintext_hex = plaintext.hex().upper()
+    print("Plaintext     :", message)
+    print("Plaintext HEX :", plaintext_hex)
+
+    # A5 encryption
+    print("\n[5] A5 ENCRYPTION")
+    ciphertext = A5_encrypt(plaintext, kc)
+    print("Plaintext     :", message)
+    print("Plaintext HEX :", plaintext_hex)
+    print("Ciphertext HEX:", ciphertext.hex().upper())
+
+    # A5 decryption
+    print("\n[6] A5 DECRYPTION")
+    decrypted = A5_encrypt(ciphertext, kc)
+    decrypted_message = decrypted.decode("utf-8")
+    print("Ciphertext HEX:", ciphertext.hex().upper())
+    print("Decrypted     :", decrypted_message)
+    print("Decrypted HEX :", decrypted.hex().upper())
+
+    # Verify decrypted message
+    print("\n[7] DECRYPTION VERIFICATION")
+    if decrypted == plaintext:
+        print("Decryption    : SUCCESS")
+        print("Messages MATCH.")
+    else:
+        print("Decryption    : FAILURE")
+        print("Messages DO NOT MATCH.")
+
+    # End current session
+    print("\n" + "=" * 60)
+    print(f"                 SESSION {session} COMPLETED")
+    print("=" * 60)
+    print("Authentication : SUCCESS")
+    print("Encryption     : COMPLETED")
+    print("Decryption     : COMPLETED")
+    print("Verification   : SUCCESS")
+    print("\nNext session will generate a NEW RAND and NEW Kc.")
+
+    session += 1
+</script>
+<script type="text/plain" id="src-exp3">
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from matplotlib.patches import RegularPolygon
+
+LETTERS = "ABCDEFG"
+
+
+def axial_to_pixel(q, r, R):
+    """Flat-top hexagon axial coordinates -> Cartesian pixel coordinates."""
+    x = 1.5 * R * q
+    y = np.sqrt(3) * R * (r + q / 2.0)
+    return x, y
+
+
+def build_cluster(i, j):
+    """Cluster size N and the two lattice vectors that generate it."""
+    N = i**2 + i * j + j**2
+    A = (i, j)
+    B = (-j, i + j)
+    return N, A, B
+
+
+def make_labeller(i, j, N):
+    """
+    Return a function label(q, r) -> integer 0..N-1 that is identical on
+    two cells if and only if they are co-channel. Works for ALL valid
+    (i, j), including non-coprime pairs like (2, 2) for N = 12.
+    """
+    pair_to_id = {}
+
+    def label(q, r):
+        u = ((i + j) * q + j * r) % N
+        v = (-j * q + i * r) % N
+        key = (u, v)
+        if key not in pair_to_id:
+            pair_to_id[key] = len(pair_to_id)
+        return pair_to_id[key]
+
+    return label
+
+
+def generate_reuse_pattern(i, j, R=1.0, grid_span=7, save=True):
+    """Build one complete reuse pattern and return (figure, results dict)."""
+    N, A, B = build_cluster(i, j)
+    label = make_labeller(i, j, N)
+
+    centers = []
+    window = grid_span * 1.55 * R
+    for q in range(-grid_span - 2, grid_span + 3):
+        for r in range(-grid_span - 2, grid_span + 3):
+            x, y = axial_to_pixel(q, r, R)
+            if abs(x) > window or abs(y) > window:
+                continue
+            centers.append((x, y, label(q, r)))
+
+    n_labels = len({lab for _, _, lab in centers})
+    assert n_labels == N, f"labelling produced {n_labels} labels, expected {N}"
+
+    fig, ax = plt.subplots(figsize=(7.2, 7.2))
+    for x, y, lab in centers:
+        color = "#e74c3c" if lab == 0 else "#dfe6e9"
+        ax.add_patch(RegularPolygon(
+            (x, y), numVertices=6, radius=R * 0.985, orientation=np.pi / 6,
+            edgecolor="black", facecolor=color, linewidth=0.8))
+        letter = LETTERS[lab] if lab < 26 else str(lab)
+        ax.text(x, y, letter, ha="center", va="center", fontsize=9,
+                fontweight="bold" if lab == 0 else "normal",
+                color="white" if lab == 0 else "black")
+
+    co = np.array([(x, y) for x, y, lab in centers if lab == 0])
+    nearest = []
+    for x0, y0 in co:
+        d = np.hypot(co[:, 0] - x0, co[:, 1] - y0)
+        d = d[d > 1e-9]
+        if len(d):
+            nearest.append(d.min())
+    D_measured = float(np.median(nearest))
+    D_theory = R * np.sqrt(3 * N)
+    assert abs(D_measured - D_theory) < 1e-6 * R, "geometry check failed!"
+
+    p0 = co[np.argmin(np.hypot(co[:, 0], co[:, 1]))]
+    d0 = np.hypot(co[:, 0] - p0[0], co[:, 1] - p0[1])
+    d0[d0 < 1e-9] = np.inf
+    p1 = co[np.argmin(d0)]
+    ax.plot([p0[0], p1[0]], [p0[1], p1[1]], "b--", lw=2)
+    ax.annotate(f"D = {D_measured:.3f}",
+                ((p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2),
+                textcoords="offset points", xytext=(0, 10),
+                color="blue", fontsize=11, fontweight="bold", ha="center")
+
+    ax.set_xlim(-window - R, window + R)
+    ax.set_ylim(-window - R, window + R)
+    ax.set_aspect("equal")
+    ax.axis("off")
+    ax.set_title(f"Frequency Reuse Pattern, N = {N} (i = {i}, j = {j})   "
+                 f"D/R = {D_measured/R:.3f}", fontsize=12)
+
+    fname = f"reuse_N{N}.png"
+    if save:
+        fig.savefig(fname, dpi=200, bbox_inches="tight")
+
+    n_path = 4.0
+    Q = D_theory / R
+    sir_db = 10 * np.log10((Q ** n_path) / 6.0)
+    total_channels = 420
+    per_cell = total_channels // N
+
+    return fig, dict(N=N, i=i, j=j, ratio_theory=D_theory / R,
+                     ratio_measured=D_measured / R, sir_db=sir_db,
+                     channels_per_cell=per_cell, file=fname)
+
+
+def generate_patterns_overview(results, fname="reuse_patterns_overview.png"):
+    """Assemble the saved individual patterns into one 2 x 3 overview figure."""
+    fig, axes = plt.subplots(2, 3, figsize=(15, 10.5))
+    for ax, res in zip(axes.flat, results):
+        ax.imshow(mpimg.imread(res["file"]))
+        ax.axis("off")
+        ax.set_title(f"N = {res['N']}   D/R = {res['ratio_measured']:.3f}   "
+                     f"SIR = {res['sir_db']:.1f} dB", fontsize=11)
+    for ax in list(axes.flat)[len(results):]:
+        ax.axis("off")
+    fig.suptitle("Frequency reuse patterns for all valid cluster sizes "
+                 "N = 1, 3, 4, 7", fontsize=14)
+    fig.tight_layout()
+    fig.savefig(fname, dpi=150, bbox_inches="tight")
+    return fig
+
+
+def generate_tradeoff_curve(results, fname="tradeoff_curve.png"):
+    Ns = np.array([r["N"] for r in results])
+    sir = np.array([r["sir_db"] for r in results])
+    ch = np.array([r["channels_per_cell"] for r in results])
+
+    fig, ax1 = plt.subplots(figsize=(8, 5))
+    ax1.plot(Ns, sir, "o-", color="tab:green", lw=2)
+    ax1.set_xlabel("Cluster size N")
+    ax1.set_ylabel("First-tier SIR (dB)", color="tab:green")
+    ax1.tick_params(axis="y", labelcolor="tab:green")
+    ax1.axhline(18, color="gray", ls=":", lw=1)
+    ax1.text(Ns[0] + 0.1, 18.3, "typical 18 dB requirement",
+             fontsize=9, color="gray")
+    ax2 = ax1.twinx()
+    ax2.plot(Ns, ch, "s--", color="tab:purple", lw=2)
+    ax2.set_ylabel("Channels per cell (420 total)", color="tab:purple")
+    ax2.tick_params(axis="y", labelcolor="tab:purple")
+    plt.title("Capacity vs Interference tradeoff across cluster sizes")
+    fig.tight_layout()
+    fig.savefig(fname, dpi=150)
+    return fig
+
+
+if __name__ == "__main__":
+    configs = [(1, 0), (1, 1), (2, 0), (2, 1)]   # N = 1, 3, 4, 7
+    hdr = (f"{'N':>3} {'(i,j)':>7} {'D/R theory':>11} {'D/R measured':>13} "
+           f"{'SIR (dB)':>9} {'ch/cell':>8}")
+    print(hdr)
+    print("-" * len(hdr))
+
+    results = []
+    for i, j in configs:
+        fig, res = generate_reuse_pattern(i, j)
+        results.append(res)
+        print(f"{res['N']:>3} ({res['i']},{res['j']})"
+              f"{res['ratio_theory']:>12.3f}{res['ratio_measured']:>14.3f}"
+              f"{res['sir_db']:>10.2f}{res['channels_per_cell']:>9}")
+
+    generate_patterns_overview(results)
+    generate_tradeoff_curve(results)
+
+    print("\nAll geometry checks passed: measured D/R = sqrt(3N) exactly.")
+    print("Saved: " + ", ".join(r["file"] for r in results)
+          + ", reuse_patterns_overview.png, tradeoff_curve.png")
+    plt.show()   # display every reuse pattern + overview + tradeoff curve
+</script>
+
+<script type="text/plain" id="src-exp5">
+import csv
+import os
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+F_MHZ = 2400.0      # 2.4 GHz Wi-Fi
+D0 = 1.0            # reference distance (metres)
+
+# ----------------------------------------------------------------------
+# STEP 1 - Data input: your field readings from the phone app
+# ----------------------------------------------------------------------
+SAMPLE_CSV = """Distance_m,RSSI1_dBm,RSSI2_dBm
+1,-35,-37
+2,-42,-40
+5,-55,-53
+10,-65,-67
+15,-72,-70
+20,-78,-76
+"""
+
+
+def load_readings(fname="rssi_distance.csv"):
+    """Read (distance, [readings...]) rows; create a sample on first run."""
+    if not os.path.exists(fname):
+        with open(fname, "w") as f:
+            f.write(SAMPLE_CSV)
+        print(f"[i] No {fname} found - a SAMPLE file was created with the")
+        print("    handout's illustrative values. Replace them with your own")
+        print("    field readings, then rerun.")
+    dists, all_readings = [], []
+    with open(fname) as f:
+        for row in csv.reader(f):
+            if not row or row[0].startswith("Distance"):
+                continue                  # skip header / blank lines
+            dists.append(float(row[0]))
+            all_readings.append([float(v) for v in row[1:] if v.strip()])
+    return np.array(dists), all_readings
+
+
+# ----------------------------------------------------------------------
+# STEP 2 - Average the repeat readings (and keep their spread)
+# ----------------------------------------------------------------------
+def average_readings(all_readings):
+    """Mean and spread (std dev) of the repeat readings at each distance."""
+    means = np.array([np.mean(r) for r in all_readings])
+    spreads = np.array([np.std(r) for r in all_readings])
+    return means, spreads
+
+
+# ----------------------------------------------------------------------
+# STEP 3 - Theory: FSPL and the free-space prediction
+# ----------------------------------------------------------------------
+def fspl_db(d, f_mhz=F_MHZ):
+    """Free Space Path Loss in dB (d in metres, f in MHz)."""
+    return 20 * np.log10(d) + 20 * np.log10(f_mhz) - 27.55
+
+
+def free_space_prediction(d, rssi_at_d0):
+    """
+    Free-space RSSI curve ANCHORED at your own d0 = 1 m measurement:
+        RSSI(d) = RSSI(d0) - [FSPL(d) - FSPL(d0)]
+                = RSSI(d0) - 20*log10(d/D0)
+    Anchoring removes the unknown router transmit power and antenna gains
+    from the comparison - only the SHAPE of the decay is being tested.
+    """
+    return rssi_at_d0 - 20 * np.log10(d / D0)
+
+
+# ----------------------------------------------------------------------
+# STEP 4 - Fit the Log-Distance Path Loss Model: find YOUR n
+# ----------------------------------------------------------------------
+def fit_path_loss_exponent(dists, rssi_means):
+    """
+    Log-distance model: RSSI(d) = RSSI(d0) - 10*n*log10(d/d0).
+    Rearranged, RSSI is LINEAR in x = 10*log10(d/d0) with slope -n,
+    so a least-squares straight-line fit gives n directly.
+    Returns (n, rssi_d0_fit, sigma) where sigma is the shadowing spread
+    X_sigma - the std dev of the residuals around the fitted line.
+    """
+    x = 10 * np.log10(dists / D0)
+    slope, intercept = np.polyfit(x, rssi_means, 1)
+    n = -slope
+    residuals = rssi_means - (slope * x + intercept)
+    sigma = float(np.std(residuals))
+    return n, intercept, sigma
+
+
+def classify_environment(n):
+    if n < 2.2:
+        return "free-space-like (open, unobstructed)"
+    if n < 3.0:
+        return "lightly obstructed indoor / open corridor"
+    if n < 4.0:
+        return "typical indoor with walls and furniture"
+    return "heavily obstructed indoor (many walls / floors)"
+
+
+# ----------------------------------------------------------------------
+# STEP 5 - Report table and figures
+# ----------------------------------------------------------------------
+def print_table(dists, all_readings, means, theory, fitted):
+    n_rd = max(len(r) for r in all_readings)
+    hdr = ("Dist (m) " + "".join(f"R{k+1} (dBm) " for k in range(n_rd))
+           + "Avg (dBm)  Free-space  Fitted model  Extra loss")
+    print("\n" + hdr)
+    print("-" * len(hdr))
+    for i, d in enumerate(dists):
+        rd = "".join(f"{v:>8.0f} " for v in all_readings[i]).ljust(n_rd * 10)
+        extra = theory[i] - means[i]      # how far BELOW free space we are
+        print(f"{d:>7.0f} {rd}{means[i]:>8.1f} {theory[i]:>10.1f} "
+              f"{fitted[i]:>12.1f} {extra:>9.1f}")
+
+
+def plot_rssi_vs_distance(dists, means, spreads, n, rssi_d0,
+                          fname="rssi_vs_distance.png"):
+    d_smooth = np.linspace(dists.min(), dists.max(), 300)
+    theory = free_space_prediction(d_smooth, means[0])
+    fitted = rssi_d0 - 10 * n * np.log10(d_smooth / D0)
+
+    fig, ax = plt.subplots(figsize=(8.5, 5.5))
+    ax.errorbar(dists, means, yerr=spreads, fmt="o", color="tab:blue",
+                capsize=4, markersize=7, label="Measured (avg ± spread)")
+    ax.plot(d_smooth, theory, "--", color="tab:green", lw=2,
+            label="Free space, n = 2 (anchored at 1 m)")
+    ax.plot(d_smooth, fitted, "-", color="tab:red", lw=2,
+            label=f"Fitted log-distance model, n = {n:.2f}")
+    ax.set_xlabel("Distance from router (m)")
+    ax.set_ylabel("RSSI (dBm)")
+    ax.set_title("Signal strength vs distance: measurement, free-space "
+                 "theory, fitted model")
+    ax.grid(alpha=0.3)
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(fname, dpi=150)
+    return fig
+
+
+def plot_semilog(dists, means, spreads, n, rssi_d0,
+                 fname="rssi_vs_log_distance.png"):
+    d_smooth = np.linspace(dists.min(), dists.max(), 300)
+    fitted = rssi_d0 - 10 * n * np.log10(d_smooth / D0)
+
+    fig, ax = plt.subplots(figsize=(8.5, 5.5))
+    ax.errorbar(dists, means, yerr=spreads, fmt="o", color="tab:blue",
+                capsize=4, markersize=7, label="Measured (avg ± spread)")
+    ax.plot(d_smooth, fitted, "-", color="tab:red", lw=2,
+            label=f"Fitted line, slope = -10n = {-10*n:.1f} dB/decade")
+    ax.set_xscale("log")
+    ax.set_xticks(dists)
+    ax.set_xticklabels([f"{d:g}" for d in dists])
+    ax.set_xlabel("Distance from router (m) - log scale")
+    ax.set_ylabel("RSSI (dBm)")
+    ax.set_title("The same data on a log-distance axis: the decay "
+                 "becomes a straight line")
+    ax.grid(alpha=0.3, which="both")
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(fname, dpi=150)
+    return fig
+
+
+# ----------------------------------------------------------------------
+# MAIN - run the whole analysis
+# ----------------------------------------------------------------------
+if __name__ == "__main__":
+    dists, all_readings = load_readings()
+    means, spreads = average_readings(all_readings)
+
+    # theory curve at the measurement distances (anchored at d0 = 1 m)
+    theory = free_space_prediction(dists, means[0])
+
+    # fit the log-distance model
+    n, rssi_d0_fit, sigma = fit_path_loss_exponent(dists, means)
+    fitted = rssi_d0_fit - 10 * n * np.log10(dists / D0)
+
+    print("\n=== RSSI vs distance survey (f = %.0f MHz) ===" % F_MHZ)
+    print_table(dists, all_readings, means, theory, fitted)
+
+    print(f"\nAbsolute FSPL at 1 m and {F_MHZ:.0f} MHz: {fspl_db(1.0):.1f} dB")
+    print(f"Implied router EIRP (RSSI at 1 m + FSPL at 1 m): "
+          f"{means[0] + fspl_db(1.0):.1f} dBm")
+    print(f"\nFitted path loss exponent n = {n:.2f}")
+    print(f"Shadowing spread sigma = {sigma:.2f} dB")
+    print(f"Environment classification : {classify_environment(n)}")
+    print("Rule-of-thumb check: doubling distance costs "
+          f"{10 * n * np.log10(2):.1f} dB here (free space: 6.0 dB)")
+
+    plot_rssi_vs_distance(dists, means, spreads, n, rssi_d0_fit)
+    plot_semilog(dists, means, spreads, n, rssi_d0_fit)
+    print("\nSaved: rssi_vs_distance.png, rssi_vs_log_distance.png")
+    plt.show()
+</script>
+<script type="text/plain" id="src-exp4">
+import csv
+import os
+import re
+import subprocess
+import sys
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def freq_to_channel(mhz):
+    """Convert a centre frequency in MHz to a Wi-Fi channel number."""
+    if 2412 <= mhz <= 2472:
+        return (mhz - 2407) // 5          # 2.4 GHz: ch 1..13
+    if mhz == 2484:
+        return 14                         # Japan-only channel 14
+    if 5000 <= mhz <= 5900:
+        return (mhz - 5000) // 5          # 5 GHz: ch 36, 40, ...
+    return None
+
+
+def scan_windows():
+    """Parse 'netsh wlan show networks mode=bssid' (Windows)."""
+    out = subprocess.run(
+        ["netsh", "wlan", "show", "networks", "mode=bssid"],
+        capture_output=True, text=True).stdout
+    nets, ssid = [], None
+    for line in out.splitlines():
+        line = line.strip()
+        m = re.match(r"SSID \d+ : (.*)", line)
+        if m:
+            ssid = m.group(1).strip() or "<hidden>"
+        m = re.match(r"Signal\s*:\s*(\d+)%", line)
+        if m and ssid is not None:
+            pct = int(m.group(1))
+            rssi = pct / 2 - 100          # standard %-to-dBm approximation
+            nets.append({"ssid": ssid, "rssi": rssi, "channel": None})
+        m = re.match(r"Channel\s*:\s*(\d+)", line)
+        if m and nets and nets[-1]["channel"] is None:
+            nets[-1]["channel"] = int(m.group(1))
+    return [n for n in nets if n["channel"] is not None]
+
+
+def scan_linux():
+    """Parse 'nmcli -t -f SSID,SIGNAL,CHAN dev wifi' (Linux)."""
+    out = subprocess.run(
+        ["nmcli", "-t", "-f", "SSID,SIGNAL,CHAN", "dev", "wifi"],
+        capture_output=True, text=True).stdout
+    nets = []
+    for line in out.splitlines():
+        parts = line.rsplit(":", 2)       # SSID may itself contain ':'
+        if len(parts) != 3:
+            continue
+        ssid, signal, chan = parts
+        try:
+            pct, ch = int(signal), int(chan)
+        except ValueError:
+            continue
+        nets.append({"ssid": ssid or "<hidden>",
+                     "rssi": pct / 2 - 100, "channel": ch})
+    return nets
+
+
+def scan_macos():
+    """Parse the macOS 'airport -s' scan output."""
+    airport = ("/System/Library/PrivateFrameworks/Apple80211.framework/"
+               "Versions/Current/Resources/airport")
+    out = subprocess.run([airport, "-s"], capture_output=True,
+                         text=True).stdout
+    nets = []
+    for line in out.splitlines()[1:]:
+        m = re.match(r"\s*(.+?)\s+([0-9a-f:]{17})\s+(-\d+)\s+(\d+)", line)
+        if m:
+            nets.append({"ssid": m.group(1).strip(),
+                         "rssi": float(m.group(3)),
+                         "channel": int(m.group(4).split(",")[0])})
+    return nets
+
+
+SAMPLE_CSV = """SSID,RSSI_dBm,Channel
+MyHomeWiFi,-42,6
+Airtel_4G21,-58,1
+JioFiber_2G,-61,6
+TP-Link_A3F2,-66,6
+Neighbour_2G,-70,1
+Excitel_204,-72,11
+D-Link_Home,-75,4
+ACT_Fibernet,-77,9
+CoffeeShop_Free,-81,11
+MyHomeWiFi_5G,-48,36
+JioFiber_5G,-63,44
+OnePlus_Hotspot,-69,149
+"""
+
+
+def load_csv(fname="wifi_scan.csv"):
+    """Read manually recorded readings (from the phone app) out of a CSV."""
+    if not os.path.exists(fname):
+        with open(fname, "w") as f:
+            f.write(SAMPLE_CSV)
+        print(f"[i] No {fname} found - a SAMPLE file was created. Replace its")
+        print("    rows with your own readings from the phone app, then rerun.")
+    nets = []
+    with open(fname) as f:
+        for row in csv.DictReader(f):
+            nets.append({"ssid": row["SSID"],
+                         "rssi": float(row["RSSI_dBm"]),
+                         "channel": int(row["Channel"])})
+    return nets
+
+
+def get_networks():
+    """Try a live OS scan first; fall back to the CSV if it fails."""
+    try:
+        if sys.platform.startswith("win"):
+            nets = scan_windows()
+        elif sys.platform == "darwin":
+            nets = scan_macos()
+        else:
+            nets = scan_linux()
+        if nets:
+            print(f"[i] Live scan found {len(nets)} networks.")
+            return nets, "live scan"
+    except Exception as e:
+        print(f"[!] Live scan failed ({e}).")
+    return load_csv(), "CSV file"
+
+
+def plot_channel_graph(nets, fname="channel_graph_24ghz.png"):
+    """
+    Draw each 2.4 GHz network as a curve centred on its channel.
+    A 20 MHz-wide transmission on channel c occupies roughly channels
+    c-2 .. c+2 (channels are only 5 MHz apart), which is why the curves
+    overlap - exactly what the phone app shows.
+    """
+    nets24 = [n for n in nets if n["channel"] <= 14]
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+    cmap = plt.cm.tab10
+    floor = -95                            # graph floor (below = unusable)
+
+    for k, n in enumerate(nets24):
+        c, r = n["channel"], n["rssi"]
+        x = np.linspace(c - 2, c + 2, 200)
+        y = floor + (r - floor) * np.cos((x - c) / 2 * np.pi / 2) ** 2
+        color = cmap(k % 10)
+        ax.plot(x, y, color=color, lw=2)
+        ax.fill_between(x, floor, y, color=color, alpha=0.15)
+        ax.annotate(n["ssid"], (c, r), textcoords="offset points",
+                    xytext=(0, 4), ha="center", fontsize=8, color=color)
+
+    for c in (1, 6, 11):                   # the three non-overlapping channels
+        ax.axvline(c, color="gray", ls=":", lw=1)
+
+    ax.set_xticks(range(1, 14))
+    ax.set_xlim(-1.5, 15.5)
+    ax.set_ylim(floor, -25)
+    ax.set_xlabel("2.4 GHz channel number")
+    ax.set_ylabel("RSSI (dBm)")
+    ax.set_title("Channel graph - each network drawn on its channel "
+                 "(dotted lines: non-overlapping channels 1, 6, 11)")
+    ax.grid(axis="y", alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(fname, dpi=150)
+    return fig
+
+
+def quality(rssi):
+    """Map an RSSI reading to the standard signal-quality wording."""
+    if rssi >= -50:
+        return "Excellent"
+    if rssi >= -60:
+        return "Good"
+    if rssi >= -70:
+        return "Fair"
+    if rssi >= -80:
+        return "Weak"
+    return "Very poor"
+
+
+def band_of(channel):
+    return "2.4 GHz" if channel <= 14 else "5 GHz"
+
+
+def print_table(nets):
+    print(f"\n{'SSID':<20} {'RSSI (dBm)':>10} {'Channel':>8} "
+          f"{'Band':>8} {'Quality':>10}")
+    print("-" * 62)
+    for n in sorted(nets, key=lambda n: n["rssi"], reverse=True):
+        print(f"{n['ssid'][:20]:<20} {n['rssi']:>10.0f} {n['channel']:>8} "
+              f"{band_of(n['channel']):>8} {quality(n['rssi']):>10}")
+
+
+def congestion(nets):
+    """
+    Count how many networks OVERLAP each 2.4 GHz channel, not just how many
+    are centred on it: a network on channel c interferes with channels
+    c-2 .. c+2. This is the number that actually predicts contention.
+    """
+    counts = {c: 0 for c in range(1, 14)}
+    for n in nets:
+        if n["channel"] <= 14:
+            for c in range(max(1, n["channel"] - 2),
+                           min(13, n["channel"] + 2) + 1):
+                counts[c] += 1
+    return counts
+
+
+def plot_congestion(nets, fname="channel_congestion.png"):
+    counts = congestion(nets)
+    fig, ax = plt.subplots(figsize=(9, 4.5))
+    colors = ["#2ecc71" if c in (1, 6, 11) else "#95a5a6" for c in counts]
+    ax.bar(list(counts.keys()), list(counts.values()), color=colors)
+    ax.set_xticks(range(1, 14))
+    ax.set_xlabel("2.4 GHz channel number")
+    ax.set_ylabel("Networks overlapping this channel")
+    ax.set_title("Channel congestion (green = the non-overlapping "
+                 "channels 1, 6, 11)")
+    ax.grid(axis="y", alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(fname, dpi=150)
+    return fig
+
+
+def recommend_channel(nets):
+    counts = congestion(nets)
+    best = min((1, 6, 11), key=lambda c: counts[c])
+    print("\nCongestion on the three non-overlapping channels:")
+    for c in (1, 6, 11):
+        print(f"  channel {c:>2}: {counts[c]} overlapping network(s)")
+    print(f"[>] Recommended channel for a new 2.4 GHz router here: {best}")
+    return best
+
+
+if __name__ == "__main__":
+    nets, source = get_networks()
+    print(f"\n=== Wi-Fi survey ({source}) ===")
+    print_table(nets)
+
+    n24 = sum(1 for n in nets if n["channel"] <= 14)
+    n5 = len(nets) - n24
+    print(f"\nBand summary: {n24} networks on 2.4 GHz, {n5} on 5 GHz.")
+
+    plot_channel_graph(nets)
+    plot_congestion(nets)
+    recommend_channel(nets)
+    print("\nSaved: channel_graph_24ghz.png, channel_congestion.png")
+    plt.show()
+</script>
+
+<script type="text/plain" id="src-exp9">
+import os
+import csv
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+WAVELENGTH_M = 0.125   # 12.5 cm at 2.4 GHz
+
+SAMPLE_SCAN_CSV = """Position_cm,RSSI_Indoor_dBm,RSSI_Outdoor_dBm
+0,-50,-57
+10,-56,-58
+20,-47,-58
+30,-60,-59
+40,-51,-59
+50,-58,-60
+"""
+
+SAMPLE_STATIONARY_CSV = """Time_s,RSSI_dBm
+0,-51
+5,-52
+10,-50
+15,-54
+20,-52
+25,-53
+30,-51
+35,-55
+40,-52
+45,-54
+50,-53
+55,-52
+"""
+
+
+def load_scan(fname="scan.csv"):
+    if not os.path.exists(fname):
+        with open(fname, "w") as f:
+            f.write(SAMPLE_SCAN_CSV)
+    pos, indoor, outdoor = [], [], []
+    with open(fname) as f:
+        for r in csv.reader(f):
+            if not r or r[0].startswith("Position"):
+                continue
+            pos.append(float(r[0]))
+            indoor.append(float(r[1]))
+            outdoor.append(float(r[2]) if len(r) > 2 and r[2].strip() else np.nan)
+    return np.array(pos), np.array(indoor), np.array(outdoor)
+
+
+def load_stationary(fname="stationary.csv"):
+    if not os.path.exists(fname):
+        with open(fname, "w") as f:
+            f.write(SAMPLE_STATIONARY_CSV)
+    time_s, rssi = [], []
+    with open(fname) as f:
+        for r in csv.reader(f):
+            if not r or r[0].startswith("Time"):
+                continue
+            time_s.append(float(r[0]))
+            rssi.append(float(r[1]))
+    return np.array(time_s), np.array(rssi)
+
+
+def roughness(r):
+    # Mean absolute step-to-step change: smooth traces -> small, multipath traces -> large
+    valid = r[~np.isnan(r)]
+    return float(np.mean(np.abs(np.diff(valid))))
+
+
+def fade_depth(r):
+    # Peak-to-null swing, dB
+    valid = r[~np.isnan(r)]
+    return float(valid.max() - valid.min())
+
+
+def reversals(r):
+    # % of steps where RSSI got STRONGER while moving further away
+    valid = r[~np.isnan(r)]
+    d = np.diff(valid)
+    return 100.0 * float(np.sum(d > 0)) / d.size
+
+
+def print_report(pos, indoor, outdoor, time_s, stat_rssi):
+    r_ind = roughness(indoor)
+    r_out = roughness(outdoor)
+    f_ind = fade_depth(indoor)
+    f_out = fade_depth(outdoor)
+    rev_ind = reversals(indoor)
+    rev_out = reversals(outdoor)
+
+    print("=== Multipath fading survey ===")
+    print("Wavelength at 2.4 GHz = 12.5 cm -> peaks/nulls repeat about every 6.2 cm\n")
+    print(
+        f"{'Trace':<10} | {'Mean (dBm)':<11} | {'Spread (dB)':<11} | "
+        f"{'Roughness (dB)':<15} | {'Fade Depth (dB)':<14} | {'Reversals'}")
+    print("-" * 85)
+    print(
+        f"{'Indoor':<10} | {np.mean(indoor):<11.1f} | {np.std(indoor):<11.1f} | "
+        f"{r_ind:<15.1f} | {f_ind:<14.1f} | {rev_ind:.0f}%")
+    print(
+        f"{'Outdoor':<10} | {np.nanmean(outdoor):<11.1f} | {np.nanstd(outdoor):<11.1f} | "
+        f"{r_out:<15.1f} | {f_out:<14.1f} | {rev_out:.0f}%")
+
+    stat_mean = np.mean(stat_rssi)
+    stat_spread = stat_rssi.max() - stat_rssi.min()
+    print(f"\nStanding still: mean {stat_mean:.1f} dBm, but the reading still varied by {stat_spread:.0f} dB")
+    print("without moving at all (people/doors changing the reflections).\n")
+
+    ratio = r_ind / r_out if r_out > 0 else 0
+    print("HEADLINE: the indoor trace is {:.1f}x rougher than outdoors ({:.1f} vs {:.1f} dB per step),".format(
+        ratio, r_ind, r_out))
+    print("which is the signature of multipath fading.")
+
+
+def plot_scan(pos, indoor, outdoor):
+    plt.figure(figsize=(8, 4.5))
+    plt.plot(pos, indoor, 'o-', color='#3b3b3b', label='Indoor (many reflectors)')
+    plt.plot(pos, outdoor, 's--', color='#7a7a7a', label='Outdoor (few reflectors)')
+    plt.title('Multipath fading: RSSI vs position, indoor vs outdoor')
+    plt.xlabel('Position along the scan (cm)')
+    plt.ylabel('RSSI (dBm)')
+    plt.legend()
+    plt.grid(True, linestyle=':', alpha=0.6)
+    plt.tight_layout()
+
+
+def plot_stationary(time_s, rssi):
+    plt.figure(figsize=(8, 4.5))
+    plt.plot(time_s, rssi, 'o-', color='#5c5c5c')
+    mean_val = np.mean(rssi)
+    plt.axhline(mean_val, color='gray', linestyle=':', alpha=0.7)
+    spread = rssi.max() - rssi.min()
+    plt.title(f'Standing perfectly still: RSSI still varies by {spread:.0f} dB')
+    plt.text(time_s[-1], rssi.max(), f'mean: {mean_val:.1f} dBm', ha='right', va='top')
+    plt.xlabel('Time (s)')
+    plt.ylabel('RSSI (dBm)')
+    plt.grid(True, linestyle=':', alpha=0.6)
+    plt.tight_layout()
+
+
+def plot_roughness(indoor, outdoor):
+    labels = ['Indoor', 'Outdoor']
+    rough = [roughness(indoor), roughness(outdoor)]
+    fade = [fade_depth(indoor), fade_depth(outdoor)]
+    x = np.arange(len(labels))
+    width = 0.35
+
+    plt.figure(figsize=(7, 4.5))
+    plt.bar(x - width / 2, rough, width, label='Roughness (mean |step|, dB)', color='#5a5a5a')
+    plt.bar(x + width / 2, fade, width, label='Fade depth (peak to null, dB)', color='#c7b299')
+    for i in range(len(labels)):
+        plt.text(x[i] - width / 2, rough[i] + 0.2, f'{rough[i]:.1f}', ha='center')
+        plt.text(x[i] + width / 2, fade[i] + 0.2, f'{fade[i]:.1f}', ha='center')
+    plt.title('Indoor vs outdoor: how jagged is the signal?')
+    plt.ylabel('dB')
+    plt.xticks(x, labels)
+    plt.legend()
+    plt.grid(axis='y', linestyle=':', alpha=0.6)
+    plt.tight_layout()
+
+
+def plot_two_ray(distance_cm=50, reflection=1.0):
+    x = np.linspace(0, distance_cm, 2000) / 100.0            # metres
+    phase = 2 * np.pi * (2 * x) / WAVELENGTH_M               # path difference ~ 2x
+    combined = np.abs(1 + reflection * np.exp(1j * phase)) / (1 + reflection)
+    db = 20 * np.log10(np.maximum(combined, 1e-4))
+
+    plt.figure(figsize=(8, 4.5))
+    plt.plot(x * 100, db, color='#555555')
+    plt.ylim(-30, 2)
+    plt.title('Two-ray theory: peaks and nulls repeat every ~6.2 cm (half a wavelength)')
+    plt.xlabel('Receiver position (cm)')
+    plt.ylabel('Combined signal (dB relative to peak)')
+    plt.grid(True, linestyle=':', alpha=0.6)
+    plt.tight_layout()
+
+
+if __name__ == "__main__":
+    pos, indoor, outdoor = load_scan()
+    time_s, stat_rssi = load_stationary()
+
+    print_report(pos, indoor, outdoor, time_s, stat_rssi)
+
+    plot_scan(pos, indoor, outdoor)
+    plot_stationary(time_s, stat_rssi)
+    plot_roughness(indoor, outdoor)
+    plot_two_ray()
+    plt.show()
+</script>
+<script type="text/plain" id="src-exp10">
+import csv
+import os
+from collections import OrderedDict
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ==============================================================
+# SETTINGS
+# ==============================================================
+HYSTERESIS_DB = 3.0
+PING_PONG_WINDOW_S = 20.0
+
+# ==============================================================
+# CSV DATA (changed according to the given handover values)
+# ==============================================================
+CSV_DATA = """Time_s,ServingCellID,ServingRSRP_dBm,NeighborCellID,NeighborRSRP_dBm
+10,12345,-81,67890,-92
+15,12345,-85,67890,-88
+20,12345,-89,67890,-84
+25,67890,-83,12345,-91
+30,67890,-86,12345,-88
+35,12345,-87,67890,-89
+40,12345,-84,67890,-91
+45,12345,-88,67890,-86
+50,67890,-82,12345,-90
+55,67890,-85,12345,-87
+60,67890,-88,12345,-84
+65,12345,-86,67890,-90
+70,12345,-83,67890,-87
+75,12345,-89,67890,-85
+80,67890,-81,12345,-92
+85,67890,-84,12345,-88
+90,12345,-86,67890,-87
+"""
+
+csv_file = "handover_log.csv"
+with open(csv_file, "w") as file:
+    file.write(CSV_DATA)
+
+print("CSV file created successfully:")
+print(csv_file)
+
+
+# ==============================================================
+# LOAD CSV DATA
+# ==============================================================
+def load_log(filename):
+    rows = []
+    with open(filename, "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if not row:
+                continue
+            if row[0].strip() == "Time_s":
+                continue
+            rows.append({
+                "t": float(row[0]),
+                "cell": row[1].strip(),
+                "rsrp": float(row[2]),
+                "ncell": row[3].strip(),
+                "nrsrp": float(row[4])
+            })
+    return sorted(rows, key=lambda x: x["t"])
+
+
+# ==============================================================
+# DETECT HANDOVERS
+# ==============================================================
+def detect_handovers(rows):
+    events = []
+    for previous, current in zip(rows, rows[1:]):
+        # Check whether serving cell changed
+        if previous["cell"] == current["cell"]:
+            continue
+
+        margin = np.nan
+
+        # Calculate neighbour-to-serving RSRP margin
+        if (
+            previous["ncell"] == current["cell"]
+            and not np.isnan(previous["nrsrp"])
+        ):
+            margin = (
+                previous["nrsrp"]
+                - previous["rsrp"]
+            )
+
+        events.append({
+            "time": current["t"],
+            "from": previous["cell"],
+            "to": current["cell"],
+            "before": previous["rsrp"],
+            "after": current["rsrp"],
+            "margin": margin
+        })
+    return events
+
+
+def classify_handover(margin):
+    if np.isnan(margin):
+        return "Unknown"
+    if margin >= HYSTERESIS_DB:
+        return "Healthy"
+    if margin > 0:
+        return "Weak Margin"
+    return "Unjustified"
+
+
+# ==============================================================
+# DETECT PING-PONG HANDOVER
+# ==============================================================
+def detect_ping_pong(events):
+    ping_pong = []
+    for first, second in zip(events, events[1:]):
+        time_difference = (
+            second["time"] - first["time"]
+        )
+        if (
+            second["to"] == first["from"]
+            and time_difference <= PING_PONG_WINDOW_S
+        ):
+            ping_pong.append({
+                "cellA": first["from"],
+                "cellB": first["to"],
+                "time1": first["time"],
+                "time2": second["time"],
+                "gap": time_difference
+            })
+    return ping_pong
+
+
+# ==============================================================
+# DWELL TIME
+# ==============================================================
+def calculate_dwell_time(rows):
+    dwell = OrderedDict()
+    for previous, current in zip(rows, rows[1:]):
+        cell = previous["cell"]
+        duration = (
+            current["t"] - previous["t"]
+        )
+        dwell[cell] = (
+            dwell.get(cell, 0)
+            + duration
+        )
+    return dwell
+
+
+# ==============================================================
+# TEXT REPORT
+# ==============================================================
+def print_report(rows, events, ping_pong):
+    total_time = (
+        rows[-1]["t"] - rows[0]["t"]
+    )
+    number_of_cells = len(
+        set(row["cell"] for row in rows)
+    )
+    handover_rate = (
+        len(events) / total_time * 60
+        if total_time > 0
+        else 0
+    )
+
+    print("\n")
+    print("=" * 65)
+    print("              HANDOVER ANALYSIS REPORT")
+    print("=" * 65)
+    print(f"Total route duration : {total_time:.0f} seconds")
+    print(f"Total samples        : {len(rows)}")
+    print(f"Different cells      : {number_of_cells}")
+    print(f"Total handovers      : {len(events)}")
+    print(f"Handover rate        : {handover_rate:.2f} per minute")
+
+    print("\n")
+    print("HANDOVER DETAILS")
+    print("-" * 65)
+
+    if len(events) == 0:
+        print("No handover detected.")
+    else:
+        for event in events:
+            if np.isnan(event["margin"]):
+                margin_text = "N/A"
+            else:
+                margin_text = f"{event['margin']:+.0f} dB"
+
+            verdict = classify_handover(event["margin"])
+
+            print(
+                f"Time {event['time']:.0f}s : "
+                f"{event['from']} -> {event['to']} | "
+                f"Margin = {margin_text} | "
+                f"{verdict}"
+            )
+
+    print("\n")
+    print("DWELL TIME PER CELL")
+    print("-" * 65)
+    dwell = calculate_dwell_time(rows)
+    for cell, time in dwell.items():
+        print(f"Cell {cell} : {time:.0f} seconds")
+
+    print("\n")
+    print("PING-PONG ANALYSIS")
+    print("-" * 65)
+    if ping_pong:
+        print(f"Ping-pong events detected: {len(ping_pong)}")
+        for event in ping_pong:
+            print(
+                f"{event['cellA']} -> "
+                f"{event['cellB']} -> "
+                f"{event['cellA']} | "
+                f"Time gap = {event['gap']:.0f}s"
+            )
+    else:
+        print("No ping-pong handover detected.")
+
+    print("\n")
+    print("HYSTERESIS ANALYSIS")
+    print("-" * 65)
+    marginal = []
+    for event in events:
+        if (
+            not np.isnan(event["margin"])
+            and event["margin"] < HYSTERESIS_DB
+        ):
+            marginal.append(event)
+    print(f"Marginal handovers : {len(marginal)} / {len(events)}")
+    print("=" * 65)
+
+
+# ==============================================================
+# GRAPHS
+# ==============================================================
+def plot_rsrp(rows, events):
+    time = [row["t"] for row in rows]
+    serving_rsrp = [row["rsrp"] for row in rows]
+    neighbour_rsrp = [row["nrsrp"] for row in rows]
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(time, serving_rsrp, "o-", linewidth=2, label="Serving Cell RSRP")
+    plt.plot(time, neighbour_rsrp, "s--", linewidth=2, label="Neighbour Cell RSRP")
+
+    for event in events:
+        plt.axvline(event["time"], linestyle=":", linewidth=1.5)
+
+    plt.xlabel("Time (seconds)")
+    plt.ylabel("RSRP (dBm)")
+    plt.title("Serving Cell and Neighbour Cell RSRP")
+    plt.suptitle("Handover Analysis", fontsize=16)
+    plt.grid(alpha=0.3)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("handover_rsrp_timeline.png", dpi=150)
+    plt.show()
+
+
+def plot_cell_timeline(rows):
+    cells = list(
+        OrderedDict.fromkeys(
+            row["cell"] for row in rows
+        )
+    )
+    cell_index = {
+        cell: index for index, cell in enumerate(cells)
+    }
+    time = [row["t"] for row in rows]
+    cell_values = [cell_index[row["cell"]] for row in rows]
+
+    plt.figure(figsize=(10, 4))
+    plt.step(time, cell_values, where="post", linewidth=2.5)
+    plt.scatter(time, cell_values, s=40)
+    plt.yticks(
+        range(len(cells)),
+        [f"Cell {cell}" for cell in cells]
+    )
+    plt.xlabel("Time (seconds)")
+    plt.ylabel("Serving Cell")
+    plt.title("Serving Cell ID Over Time")
+    plt.suptitle("Handover Analysis", fontsize=16)
+    plt.grid(alpha=0.3, axis="x")
+    plt.tight_layout()
+    plt.savefig("handover_cell_timeline.png", dpi=150)
+    plt.show()
+
+
+def plot_margins(events):
+    valid_events = [
+        event for event in events
+        if not np.isnan(event["margin"])
+    ]
+    if not valid_events:
+        print("No valid handover margins available.")
+        return
+
+    margins = [event["margin"] for event in valid_events]
+    labels = [
+        f"{event['from']}→{event['to']}\n"
+        f"{event['time']:.0f}s"
+        for event in valid_events
+    ]
+    x = np.arange(len(valid_events))
+
+    plt.figure(figsize=(9, 5))
+    plt.bar(x, margins, edgecolor="black")
+    plt.axhline(
+        HYSTERESIS_DB,
+        linestyle="--",
+        linewidth=2,
+        label="Hysteresis = 3 dB"
+    )
+    plt.axhline(0, linewidth=1)
+    plt.xticks(x, labels)
+    plt.xlabel("Handover")
+    plt.ylabel("Trigger Margin (dB)")
+    plt.title("Handover Trigger Margin")
+    plt.grid(axis="y", alpha=0.3)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("handover_margins.png", dpi=150)
+    plt.show()
+
+
+def plot_hysteresis(events):
+    valid_events = [
+        event for event in events
+        if not np.isnan(event["margin"])
+    ]
+    if not valid_events:
+        return
+
+    hysteresis_values = np.arange(0, 9, 1)
+    blocked = []
+    for hysteresis in hysteresis_values:
+        count = sum(
+            1 for event in valid_events
+            if event["margin"] < hysteresis
+        )
+        blocked.append(count)
+
+    plt.figure(figsize=(9, 5))
+    plt.plot(hysteresis_values, blocked, "o-", linewidth=2)
+    plt.axvline(
+        HYSTERESIS_DB,
+        linestyle="--",
+        linewidth=2,
+        label="Current Hysteresis = 3 dB"
+    )
+    plt.xlabel("Hysteresis Margin (dB)")
+    plt.ylabel("Handovers Suppressed")
+    plt.title("Effect of Hysteresis on Handovers")
+    plt.xticks(range(0, 9))
+    plt.grid(alpha=0.3)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("hysteresis_sweep.png", dpi=150)
+    plt.show()
+
+
+# ==============================================================
+# RUN COMPLETE ANALYSIS
+# ==============================================================
+rows = load_log(csv_file)
+events = detect_handovers(rows)
+ping_pong = detect_ping_pong(events)
+
+print_report(rows, events, ping_pong)
+
+plot_rsrp(rows, events)
+plot_cell_timeline(rows)
+plot_margins(events)
+plot_hysteresis(events)
+
+# ==============================================================
+# FINAL MESSAGE
+# ==============================================================
+print("\n")
+print("=" * 65)
+print("                    ANALYSIS COMPLETED")
+print("=" * 65)
+print("CSV file:")
+print("handover_log.csv")
+print("\nGenerated graphs:")
+print("1. handover_rsrp_timeline.png")
+print("2. handover_cell_timeline.png")
+print("3. handover_margins.png")
+print("4. hysteresis_sweep.png")
+print("=" * 65)
+</script>
+
+<script>
+var NP = 'python -m pip install numpy matplotlib';
+var EXPS = [
+ {id:'exp1',t:'Electromagnetic Spectrum Allocation',none:1},
+ {id:'exp2',t:'Basic Communication System',i:NP+' scipy'},
+ {id:'exp3',t:'Frequency Reuse in Cellular Systems',i:NP},
+ {id:'exp4',t:'Wi-Fi Scanning and Channel Analysis',i:NP},
+ {id:'exp5',t:'Wi-Fi Signal Strength vs Distance',i:NP},
+ {id:'exp6',t:'Cellular Network Parameters',none:1},
+ {id:'exp7',t:'Bluetooth Communication',none:1},
+ {id:'exp8',t:'GSM Security (A3, A8, A5)',i:'python -c "import hmac, hashlib, secrets; print(\'Built-in modules - nothing to install\')"'},
+ {id:'exp9',t:'Analysis of Multipath Effects',i:NP},
+ {id:'exp10',t:'Handover Analysis While Moving',i:NP}
+];
+
+var THEORY = {
+ exp1: `
+ <div class="theory">
+ <section class="aim"><h3>Aim</h3><p>To study electromagnetic spectrum allocation and the frequency bands used in wireless communication.</p></section>
+ <section><h3>Theory</h3><h4>1. Electromagnetic spectrum</h4><p>The electromagnetic (EM) spectrum is the complete range of electromagnetic waves arranged according to frequency or wavelength. EM waves travel at approximately <b>3 × 10⁸ m/s</b> in free space. Wireless communication mainly uses radio waves and microwaves to carry voice, data and multimedia without physical cables.</p><p>The relation between frequency and wavelength is <b>c = fλ</b>, where c is the speed of light, f is frequency in hertz (Hz), and λ is wavelength in metres. Frequency and wavelength are inversely proportional. For example, a higher-frequency signal has a shorter wavelength. This can influence antenna size, propagation and the amount of information that can be carried.</p><p><b>Important properties:</b> EM waves do not require a material medium; they can travel through vacuum. In practical wireless systems, signals may undergo reflection, diffraction, scattering and absorption. These effects can cause multipath fading and variation in received signal strength.</p>
+ <svg class="diagram" viewBox="0 0 900 230" role="img" aria-label="Electromagnetic spectrum from radio to gamma rays"><defs><linearGradient id="emg"><stop offset="0" stop-color="#4b8bd8"/><stop offset=".22" stop-color="#56b8c7"/><stop offset=".4" stop-color="#68b96b"/><stop offset=".55" stop-color="#e6c94c"/><stop offset=".7" stop-color="#e99546"/><stop offset="1" stop-color="#c74b72"/></linearGradient></defs><text x="20" y="24" font-size="17" fill="currentColor">Long wavelength / low frequency</text><text x="880" y="24" text-anchor="end" font-size="17" fill="currentColor">Short wavelength / high frequency</text><rect x="20" y="42" width="860" height="48" rx="8" fill="url(#emg)"/><g font-size="15" fill="#fff" font-weight="bold" text-anchor="middle"><text x="82" y="71">Radio</text><text x="240" y="71">Microwave</text><text x="382" y="71">Infrared</text><text x="500" y="71">Visible</text><text x="620" y="71">UV</text><text x="735" y="71">X-ray</text><text x="830" y="71">Gamma</text></g><path d="M30 130 H870" stroke="currentColor" stroke-width="2"/><path d="M860 124 l10 6 -10 6" fill="none" stroke="currentColor" stroke-width="2"/><text x="20" y="160" font-size="16" fill="currentColor">Frequency increases →</text><text x="20" y="190" font-size="16" fill="currentColor">Wavelength decreases →</text><text x="880" y="220" text-anchor="end" font-size="13" fill="currentColor">Not to scale</text></svg>
+ <h4>2. Radio-frequency bands</h4><p>The radio spectrum is conventionally divided into bands. These bands have different propagation characteristics and are selected according to communication range, bandwidth and application.</p><table><thead><tr><th>Band</th><th>Frequency range</th><th>Typical use</th></tr></thead><tbody><tr><td>VLF</td><td>3–30 kHz</td><td>Navigation, specialized communication</td></tr><tr><td>LF</td><td>30–300 kHz</td><td>Navigation, long-wave services</td></tr><tr><td>MF</td><td>300 kHz–3 MHz</td><td>AM broadcasting</td></tr><tr><td>HF</td><td>3–30 MHz</td><td>Shortwave, long-distance radio</td></tr><tr><td>VHF</td><td>30–300 MHz</td><td>FM radio, television, aviation</td></tr><tr><td>UHF</td><td>300 MHz–3 GHz</td><td>Mobile networks, GPS, Wi-Fi/Bluetooth bands include 2.4 GHz</td></tr><tr><td>SHF</td><td>3–30 GHz</td><td>Microwave links, satellite, some Wi-Fi/5G</td></tr><tr><td>EHF</td><td>30–300 GHz</td><td>Millimetre-wave systems, high-capacity 5G</td></tr></tbody></table>
+ <h4>3. Spectrum allocation</h4><p>Spectrum allocation is the assignment of frequency ranges to services such as broadcasting, mobile cellular, satellite, Wi-Fi and navigation. International coordination is performed by the <b>ITU (International Telecommunication Union)</b>; national regulators manage detailed assignments within their countries. Proper allocation reduces harmful interference and improves efficient spectrum use. Since spectrum is a limited natural resource, regulators also consider demand, compatibility between services, coverage requirements and efficient reuse. Licensed bands generally require authorization, while unlicensed bands are shared under prescribed technical rules.</p><h4>Why frequency selection matters</h4><ul><li><b>Coverage:</b> lower frequencies usually travel farther and penetrate buildings better.</li><li><b>Capacity:</b> wider channels at higher frequencies can support higher data rates.</li><li><b>Antenna:</b> antenna dimensions are related to wavelength; compact antennas are practical at higher frequencies.</li><li><b>Interference:</b> coordinated channel use and adequate separation help reduce interference.</li></ul><table><thead><tr><th>Service / technology</th><th>Common frequency examples</th></tr></thead><tbody><tr><td>FM radio</td><td>88–108 MHz (many countries)</td></tr><tr><td>GSM / 2G</td><td>900 MHz, 1800 MHz (common bands)</td></tr><tr><td>3G</td><td>900 MHz, 2100 MHz (deployment dependent)</td></tr><tr><td>4G LTE</td><td>Various bands, including 700 MHz, 1800 MHz, 2300 MHz</td></tr><tr><td>5G NR</td><td>Sub-6 GHz and mmWave bands</td></tr><tr><td>Wi-Fi / Bluetooth</td><td>2.4 GHz; Wi-Fi also uses 5 GHz and 6 GHz where permitted</td></tr></tbody></table><p><b>General comparison:</b> Lower frequencies usually provide wider coverage and better obstacle penetration; higher frequencies can provide more bandwidth and capacity, but often have shorter range and greater blockage sensitivity.</p></section>
+ <section class="conclusion"><h3>Conclusion</h3><p>The electromagnetic spectrum is a fundamental resource for wireless communication. Different bands are allocated to services based on propagation and bandwidth requirements. Coordinated allocation enables reliable communication while limiting interference.</p></section></div>`,
+ exp6: `<div class="theory"><section class="aim"><h3>Aim</h3><p>To study and compare the evolution of mobile communication from 2G to 5G.</p></section><section><h3>Theory</h3><h4>Introduction</h4><p>Mobile communication transfers voice and data between mobile devices through radio access networks. Each generation improves capacity, data rate, latency, spectral efficiency and supported services.</p><h4>2G — Second Generation</h4><p>2G introduced digital cellular communication. GSM is a widely deployed 2G system. It primarily supports digital voice and SMS; GPRS and EDGE provide packet-data services. GSM uses a combination of FDMA and TDMA. FDMA divides spectrum into frequency channels, while TDMA divides each channel into time slots so multiple users can share it.</p><h4>3G — Third Generation</h4><p>3G systems such as UMTS/WCDMA and CDMA2000 enabled mobile internet and multimedia services. They support services such as video calling, email and web browsing, with higher data rates than 2G. WCDMA uses code-based separation of users and supports packet-data services alongside circuit-switched voice in many deployments.</p><h4>4G — Fourth Generation</h4><p>4G LTE provides mobile broadband through an all-IP packet-switched architecture. LTE uses OFDMA in the downlink and SC-FDMA in the uplink. It supports high-quality streaming, online gaming, video conferencing and VoLTE. LTE also improves spectral efficiency through techniques such as MIMO, adaptive modulation and coding, and channel-dependent scheduling.</p><h4>5G — Fifth Generation</h4><p>5G New Radio (NR) supports enhanced mobile broadband, ultra-reliable low-latency communication and massive machine-type communication. Technologies include Massive MIMO, beamforming and network slicing. It operates in low-, mid-/Sub-6-GHz and mmWave spectrum depending on deployment. Massive MIMO uses many antenna elements, beamforming directs radio energy toward a user, and network slicing can provide logically separated network services with different performance targets.</p><h4>Key terms</h4><ul><li><b>Data rate:</b> amount of data transmitted per second.</li><li><b>Latency:</b> time taken for data to travel from source to destination.</li><li><b>Spectral efficiency:</b> useful data rate per unit bandwidth, commonly expressed in bit/s/Hz.</li><li><b>Handover:</b> transfer of an active connection from one cell/base station to another as the user moves.</li></ul>
+ <svg class="diagram" viewBox="0 0 900 300" role="img" aria-label="Generational evolution from 2G through 5G"><g font-family="Arial" text-anchor="middle"><rect x="25" y="35" width="185" height="190" rx="12" fill="#dce9fb" stroke="#4d78b9"/><rect x="245" y="35" width="185" height="190" rx="12" fill="#d8f0e8" stroke="#479a7d"/><rect x="465" y="35" width="185" height="190" rx="12" fill="#fff0d5" stroke="#c18b38"/><rect x="685" y="35" width="185" height="190" rx="12" fill="#f5dfea" stroke="#b85b87"/><g font-size="28" font-weight="bold" fill="#203044"><text x="117" y="82">2G</text><text x="337" y="82">3G</text><text x="557" y="82">4G</text><text x="777" y="82">5G</text></g><g font-size="17" fill="#203044"><text x="117" y="125">Digital voice</text><text x="117" y="151">SMS</text><text x="337" y="125">Mobile data</text><text x="337" y="151">Video calls</text><text x="557" y="125">Broadband</text><text x="557" y="151">All-IP / LTE</text><text x="777" y="125">Low latency</text><text x="777" y="151">IoT / capacity</text></g><g stroke="#60666f" stroke-width="3" fill="none"><path d="M212 130 H240 l-7 -6 m7 6 l-7 6"/><path d="M432 130 H460 l-7 -6 m7 6 l-7 6"/><path d="M652 130 H680 l-7 -6 m7 6 l-7 6"/></g><text x="450" y="270" font-size="18" fill="currentColor">Increasing data rate, capacity and service capability →</text></g></svg>
+ <h4>Comparison of generations</h4><table><thead><tr><th>Parameter</th><th>2G</th><th>3G</th><th>4G</th><th>5G</th></tr></thead><tbody><tr><td>Example standard</td><td>GSM</td><td>UMTS / WCDMA</td><td>LTE</td><td>5G NR</td></tr><tr><td>Main service</td><td>Voice, SMS</td><td>Voice + mobile data</td><td>Mobile broadband</td><td>Broadband + massive connectivity</td></tr><tr><td>Radio access</td><td>FDMA/TDMA (GSM)</td><td>WCDMA / CDMA</td><td>OFDMA DL, SC-FDMA UL</td><td>Flexible OFDM-based NR</td></tr><tr><td>Data capability</td><td>kbps class (GPRS/EDGE)</td><td>Mbps class</td><td>High Mbps, varies by LTE</td><td>Hundreds Mbps to multi-Gbps potential</td></tr><tr><td>Latency</td><td>High</td><td>Lower than 2G</td><td>Low</td><td>Can be very low with suitable deployment</td></tr><tr><td>Applications</td><td>Calls, SMS</td><td>Browsing, video call</td><td>HD streaming, VoLTE</td><td>IoT, automation, smart services</td></tr></tbody></table><p><b>Note:</b> Actual frequency bands, data rates and latency depend on spectrum, network configuration, signal conditions and operator deployment.</p></section><section class="conclusion"><h3>Conclusion</h3><p>Mobile networks evolved from 2G digital voice to 5G broadband and massive connectivity. Each generation improves network performance and enables new applications; 5G supports advanced IoT, industrial and real-time services.</p></section></div>`,
+ exp7: `<div class="theory"><section class="aim"><h3>Aim</h3><p>To study Bluetooth communication using mobile devices, including pairing, file transfer and range testing.</p></section><section><h3>Theory</h3><h4>Introduction and features</h4><p>Bluetooth is a short-range wireless technology for exchanging information between phones, computers, headsets, speakers and IoT devices without cables. It operates in the <b>2.4 GHz ISM band</b>. Classic Bluetooth uses frequency hopping to help reduce interference. Bluetooth is designed for convenient, relatively low-power communication.</p><ul><li>Short-range connectivity; range depends on radio class, antenna, surroundings and interference.</li><li>Supports pairing and authentication, with security features depending on device and mode.</li><li>Used for audio, peripherals, file exchange and device control.</li><li>Bluetooth Classic is commonly used for continuous data/audio links; Bluetooth Low Energy (BLE) is optimized for low-power devices that exchange small amounts of data.</li><li>Profiles define how Bluetooth is used for a specific purpose, such as audio or hands-free operation.</li></ul><h4>Bluetooth pairing and communication steps</h4><ol><li>Enable Bluetooth on both devices.</li><li>Make the receiving device discoverable if needed.</li><li>Scan for nearby devices and select the required device.</li><li>Confirm the pairing code/request on both devices.</li><li>After pairing, establish the relevant connection/profile and transfer data.</li><li>Disconnect when communication is complete.</li></ol>
+ <svg class="diagram" viewBox="0 0 900 230" role="img" aria-label="Bluetooth communication between two mobile devices"><g font-family="Arial" text-anchor="middle"><rect x="75" y="30" width="220" height="150" rx="16" fill="#e2edff" stroke="#4776bb" stroke-width="2"/><rect x="605" y="30" width="220" height="150" rx="16" fill="#e2f4e9" stroke="#47966d" stroke-width="2"/><g fill="#26384d"><text x="185" y="70" font-size="22" font-weight="bold">Mobile A</text><text x="185" y="103" font-size="17">Sender</text><text x="185" y="135" font-size="15">Bluetooth ON</text><text x="715" y="70" font-size="22" font-weight="bold">Mobile B</text><text x="715" y="103" font-size="17">Receiver</text><text x="715" y="135" font-size="15">Bluetooth ON</text></g><path d="M305 105 H595" stroke="#6a83a5" stroke-width="3" stroke-dasharray="8 6"/><path d="M585 98 l12 7 -12 7" fill="none" stroke="#6a83a5" stroke-width="3"/><text x="450" y="82" font-size="17" fill="currentColor">2.4 GHz radio link</text><text x="450" y="145" font-size="15" fill="currentColor">Pair → Connect → Transfer</text></g></svg>
+ <h4>Pairing, bonding and profiles</h4><p><b>Pairing</b> establishes trust between devices by exchanging or confirming security information. <b>Bonding</b> means storing keys so devices can reconnect later without repeating the full pairing process. After pairing, a profile determines the application-level behavior—for example, a headset profile for audio or an input-device profile for a keyboard.</p><h4>Piconet</h4><p>A classic Bluetooth Piconet is a small network coordinated by one central/master device, with up to seven active peripheral/slave devices in the traditional model (eight active devices including the master). The coordinator manages access to the shared radio channel.</p><svg class="diagram" viewBox="0 0 800 270" role="img" aria-label="Bluetooth piconet diagram"><g stroke="#6b8bb8" stroke-width="2" fill="#e4efff"><line x1="400" y1="125" x2="160" y2="45"/><line x1="400" y1="125" x2="400" y2="35"/><line x1="400" y1="125" x2="640" y2="45"/><line x1="400" y1="125" x2="115" y2="145"/><line x1="400" y1="125" x2="685" y2="145"/><line x1="400" y1="125" x2="250" y2="230"/><line x1="400" y1="125" x2="550" y2="230"/><circle cx="400" cy="125" r="57" fill="#d3e3ff" stroke="#4776bb"/><circle cx="160" cy="45" r="28"/><circle cx="400" cy="35" r="28"/><circle cx="640" cy="45" r="28"/><circle cx="115" cy="145" r="28"/><circle cx="685" cy="145" r="28"/><circle cx="250" cy="230" r="28"/><circle cx="550" cy="230" r="28"/></g><g font-family="Arial" text-anchor="middle" fill="#203044"><text x="400" y="120" font-size="17" font-weight="bold">Master</text><text x="400" y="142" font-size="14">Central</text><g font-size="13"><text x="160" y="49">S1</text><text x="400" y="39">S2</text><text x="640" y="49">S3</text><text x="115" y="149">S4</text><text x="685" y="149">S5</text><text x="250" y="234">S6</text><text x="550" y="234">S7</text></g></g></svg>
+ <h4>Scatternet</h4><p>A Scatternet is formed by connecting two or more Piconets. A Bluetooth device may participate in more than one Piconet and can serve as a bridge, subject to the Bluetooth implementation and scheduling.</p><svg class="diagram" viewBox="0 0 800 220" role="img" aria-label="Bluetooth scatternet of two piconets"><g font-family="Arial" text-anchor="middle"><ellipse cx="235" cy="110" rx="180" ry="90" fill="#e5efff" stroke="#5c83bc" stroke-width="2"/><ellipse cx="565" cy="110" rx="180" ry="90" fill="#e4f5e9" stroke="#559a72" stroke-width="2"/><circle cx="190" cy="100" r="32" fill="#bcd3f4" stroke="#4776bb"/><circle cx="280" cy="60" r="22" fill="#fff" stroke="#4776bb"/><circle cx="280" cy="150" r="22" fill="#fff" stroke="#4776bb"/><circle cx="520" cy="60" r="22" fill="#fff" stroke="#559a72"/><circle cx="610" cy="150" r="22" fill="#fff" stroke="#559a72"/><circle cx="610" cy="100" r="32" fill="#bde6ca" stroke="#559a72"/><path d="M315 110 H485" stroke="#7a6ab3" stroke-width="4" stroke-dasharray="7 5"/><text x="235" y="198" font-size="16" fill="currentColor">Piconet 1</text><text x="565" y="198" font-size="16" fill="currentColor">Piconet 2</text><text x="190" y="105" font-size="12" fill="#203044">Master</text><text x="610" y="105" font-size="12" fill="#203044">Master</text><text x="400" y="95" font-size="14" fill="currentColor">Bridge</text><text x="400" y="135" font-size="13" fill="currentColor">device</text></g></svg>
+ <h4>File transfer and range test</h4><p>Transfer performance is affected by file size, Bluetooth version, connection quality, distance and interference. Average throughput may be calculated as:</p><p><b>Transfer rate = File size ÷ Transfer time</b></p><p>For range testing, increase the separation between devices gradually and note the point where quality degrades or the link disconnects. Radio signal strength generally falls with distance due to path loss; walls and other obstacles can further attenuate the signal. To keep the test consistent, use the same devices, orientation and environment, and record distance, transfer time and observed connection behavior. Nearby Wi-Fi networks and other 2.4 GHz devices may also affect performance.</p><h4>Advantages and limitations</h4><ul><li><b>Advantages:</b> cable-free connection, low power for suitable devices, easy discovery and broad device support.</li><li><b>Limitations:</b> relatively short range, shared 2.4 GHz spectrum, possible interference, and data rate/range dependent on device class and Bluetooth version.</li></ul><h4>Applications</h4><p>Wireless headphones and speakers, file sharing, smartwatches, keyboards, mice, hands-free car systems and IoT devices.</p></section><section class="conclusion"><h3>Conclusion</h3><p>Bluetooth pairing and wireless communication between mobile devices were studied. The experiment illustrates device discovery, pairing, data transfer, Piconet/Scatternet concepts and the effect of distance on link reliability.</p></section></div>`,
+ exp2: `<div class="theory"><section class="aim"><h3>Aim</h3><p>To understand the basic blocks of a communication system and the flow of information from a source to a destination.</p></section><section><h3>Theory</h3><h4>Basic communication system</h4><p>A communication system transfers information from one point to another through a communication channel. The information may be voice, text, image or data. A basic system consists of a <b>source, input transducer, transmitter, channel, receiver, output transducer and destination</b>.</p><svg class="diagram" viewBox="0 0 900 180" role="img" aria-label="Block diagram of a basic communication system"><g font-family="Arial" text-anchor="middle" fill="currentColor" stroke="currentColor"><g fill="#e5efff" stroke="#6387bd"><rect x="15" y="55" width="115" height="60" rx="8"/><rect x="155" y="55" width="115" height="60" rx="8"/><rect x="295" y="55" width="125" height="60" rx="8"/><rect x="445" y="55" width="125" height="60" rx="8"/><rect x="595" y="55" width="115" height="60" rx="8"/><rect x="735" y="55" width="145" height="60" rx="8"/></g><g stroke-width="2" fill="none"><path d="M130 85 H155 M270 85 H295 M420 85 H445 M570 85 H595 M710 85 H735"/><path d="M148 80 l7 5 -7 5 M288 80 l7 5 -7 5 M438 80 l7 5 -7 5 M588 80 l7 5 -7 5 M728 80 l7 5 -7 5"/></g><g stroke="none" font-size="15" fill="#203044"><text x="72" y="90">Source</text><text x="212" y="80">Input</text><text x="212" y="99">transducer</text><text x="357" y="80">Transmitter</text><text x="507" y="80">Channel</text><text x="507" y="99" font-size="12">(noise may occur)</text><text x="652" y="80">Receiver</text><text x="652" y="99"> </text><text x="807" y="80">Output /</text><text x="807" y="99">destination</text></g></g></svg><h4>Function of each block</h4><ul><li><b>Source:</b> generates the message or information.</li><li><b>Input transducer:</b> converts a physical signal, such as sound, into an electrical signal.</li><li><b>Transmitter:</b> processes and modulates the signal, then sends it through an antenna or medium.</li><li><b>Channel:</b> the medium through which the signal travels; examples include air, optical fiber and cable.</li><li><b>Noise:</b> unwanted disturbance added to the signal during transmission.</li><li><b>Receiver:</b> selects, amplifies, demodulates and recovers the message.</li><li><b>Output transducer/destination:</b> converts the recovered signal to a useful form and delivers it to the user.</li></ul><h4>Modulation</h4><p>Modulation changes a carrier signal according to the information signal. It helps transmit signals efficiently, supports practical antenna sizes and allows multiple signals to use different frequency channels. Common analog techniques include AM and FM; digital techniques include ASK, FSK, PSK and QAM.</p><h4>Important performance terms</h4><p><b>Bandwidth</b> is the frequency range occupied by a signal. <b>Signal-to-noise ratio (SNR)</b> compares useful signal power with noise power. Higher SNR generally allows more reliable reception. A communication link is affected by attenuation, noise, interference and distortion.</p></section><section class="conclusion"><h3>Conclusion</h3><p>The basic communication system converts information into a suitable signal, transmits it through a channel and reconstructs it at the receiver. Each block contributes to reliable information transfer.</p></section></div>`,
+ exp3: `<div class="theory"><section class="aim"><h3>Aim</h3><p>To study frequency reuse in cellular systems and understand how it improves spectrum utilization.</p></section><section><h3>Theory</h3><h4>Cellular concept</h4><p>A cellular network divides a large service area into smaller regions called <b>cells</b>. Each cell is served by a base station. Instead of assigning a unique frequency to every cell, a set of frequencies is reused in sufficiently separated cells. This increases capacity while controlling co-channel interference.</p><svg class="diagram" viewBox="0 0 800 260" role="img" aria-label="Illustration of frequency reuse in separated cells"><g font-family="Arial" text-anchor="middle" stroke="#6687b5" stroke-width="2"><path d="M120 55 l45 -26 45 26 v52 l-45 26 -45 -26z M210 107 l45 -26 45 26 v52 l-45 26 -45 -26z M300 55 l45 -26 45 26 v52 l-45 26 -45 -26z M390 107 l45 -26 45 26 v52 l-45 26 -45 -26z M480 55 l45 -26 45 26 v52 l-45 26 -45 -26z M570 107 l45 -26 45 26 v52 l-45 26 -45 -26z" fill="#e6efff"/><g fill="#26384d" stroke="none" font-size="17"><text x="165" y="86">F1</text><text x="255" y="138">F2</text><text x="345" y="86">F3</text><text x="435" y="138">F1</text><text x="525" y="86">F2</text><text x="615" y="138">F3</text></g></g><text x="400" y="225" fill="currentColor" text-anchor="middle" font-size="16">Same frequency can be reused in sufficiently separated cells</text></svg><h4>Frequency reuse and cluster size</h4><p>A <b>cluster</b> is a group of neighboring cells in which each frequency channel is used once. The cluster is repeated across the coverage area. The cluster size is represented by <b>N</b>. For an ideal hexagonal layout, possible cluster sizes follow:</p><p><b>N = i² + ij + j²</b>, where i and j are non-negative integers.</p><p>The reuse factor is <b>1/N</b>. A smaller N provides more frequent reuse and higher theoretical capacity, but generally increases co-channel interference. A larger N reduces interference but uses spectrum less aggressively.</p><h4>Reuse distance</h4><p>The approximate ratio between reuse distance D and cell radius R is:</p><p><b>D/R = √(3N)</b></p><p>Here, D is the distance between centers of co-channel cells and R is the cell radius. Increasing D/R generally reduces co-channel interference.</p><h4>Benefits and limitations</h4><ul><li><b>Benefits:</b> greater capacity, efficient use of limited spectrum and scalable coverage.</li><li><b>Limitations:</b> co-channel interference, planning complexity and changing radio conditions.</li><li>Sectoring, power control and careful frequency planning can help manage interference.</li></ul></section><section class="conclusion"><h3>Conclusion</h3><p>Frequency reuse allows cellular systems to serve many users with limited spectrum by repeating channels in separated cells. Cluster size and reuse distance are important design parameters that balance capacity and interference.</p></section></div>`,
+ exp4: `<div class="theory"><section class="aim"><h3>Aim</h3><p>To scan nearby Wi-Fi networks and analyze their channels, signal strengths and operating bands.</p></section><section><h3>Theory</h3><h4>Wi-Fi scanning</h4><p>Wi-Fi devices use scanning to discover nearby wireless access points (APs). A scan can reveal the network name (SSID), BSSID (AP radio MAC address), channel, frequency band, security mode and received signal strength indicator (RSSI), depending on the operating system and tool.</p><h4>2.4 GHz and 5 GHz channels</h4><p>The 2.4 GHz band has fewer non-overlapping channel choices and is often congested because Bluetooth and other devices share the band. The 5 GHz band generally offers more channel choices and can support wider channels, but its coverage may be more affected by walls and distance. Channel availability and permitted power depend on local regulations.</p><h4>Channel overlap and interference</h4><p>Adjacent-channel interference can occur when nearby networks use overlapping channels. Co-channel networks share a channel and typically coordinate access through contention; heavy utilization can reduce throughput and increase delay. In many 2.4 GHz deployments, channels 1, 6 and 11 are commonly selected to minimize overlap where channel widths and regulatory settings permit.</p><h4>Signal strength and interpretation</h4><p>RSSI is commonly reported in dBm and is usually negative. Values closer to 0 dBm indicate a stronger received signal; for example, −45 dBm is stronger than −75 dBm. RSSI is not a direct measure of throughput because congestion, noise, channel width, interference and client capabilities also matter.</p><h4>Suggested observation fields</h4><ul><li>SSID and BSSID of the detected AP.</li><li>Frequency band and channel number.</li><li>RSSI / signal level.</li><li>Security type, if reported.</li><li>Number of visible networks sharing or overlapping the channel.</li></ul></section><section class="conclusion"><h3>Conclusion</h3><p>Wi-Fi scanning helps identify nearby access points and channel conditions. Selecting a suitable channel and band can reduce interference and improve wireless performance.</p></section></div>`,
+ exp5: `<div class="theory"><section class="aim"><h3>Aim</h3><p>To observe how Wi-Fi received signal strength changes as the distance between the access point and device increases.</p></section><section><h3>Theory</h3><h4>Received signal strength</h4><p>As a Wi-Fi client moves away from an access point, the received power generally decreases because radio energy spreads over a larger area. This reduction is called <b>path loss</b>. Walls, floors, furniture and people can further attenuate or reflect the signal.</p><h4>RSSI in dBm</h4><p>RSSI is a measure of received signal level, commonly shown in dBm. Because dBm is logarithmic, a change of 10 dB corresponds to a tenfold change in power. Typical practical interpretations are approximate: around −30 to −50 dBm is very strong, around −60 to −70 dBm is often usable, and values near or below −80 dBm may produce unreliable links depending on the application and noise.</p><h4>Free-space path loss</h4><p>In an ideal free-space model, path loss increases with distance and frequency. Real indoor environments differ because of multipath, obstructions and reflections. Therefore, measured RSSI may fluctuate rather than decrease smoothly at every step.</p><h4>Experimental method</h4><ol><li>Keep the AP and client device fixed in orientation.</li><li>Measure RSSI at a short starting distance.</li><li>Increase the separation by consistent intervals.</li><li>Record RSSI, distance and connection quality at each point.</li><li>Repeat readings when possible and compare the trend.</li></ol><h4>Factors affecting results</h4><ul><li>Obstacles and wall materials.</li><li>Interference from other Wi-Fi networks and 2.4 GHz devices.</li><li>AP transmit power, antenna pattern and device orientation.</li><li>Frequency band, channel width and environmental reflections.</li></ul></section><section class="conclusion"><h3>Conclusion</h3><p>Wi-Fi signal strength generally decreases as distance and obstruction increase. Measurements can vary due to multipath and interference, so controlled conditions and repeated readings improve the reliability of the observation.</p></section></div>`,
+ exp8: `<div class="theory"><section class="aim"><h3>Aim</h3><p>To study the role of GSM security algorithms A3, A8 and A5 in subscriber authentication and radio-link encryption.</p></section><section><h3>Theory</h3><h4>GSM security overview</h4><p>GSM security uses a subscriber secret key <b>Ki</b> stored in the SIM and the operator's authentication center. Ki is not sent over the air. A challenge-response procedure verifies that the subscriber possesses the correct secret, while a session cipher key is generated for encryption of the radio link.</p><h4>A3 — Authentication</h4><p>A3 is the authentication algorithm. The network sends a random challenge <b>RAND</b> to the SIM. The SIM computes a signed response <b>SRES</b> using RAND and Ki. The network compares the received response with its expected value. A match supports authentication of the subscriber.</p><h4>A8 — Cipher key generation</h4><p>A8 derives the cipher key <b>Kc</b> from Ki and RAND. The resulting Kc is used by the ciphering algorithm to protect traffic over the radio interface. In classic GSM implementations, A3 and A8 are often implemented together as a single COMP128-family function, although the conceptual roles are distinct.</p><h4>A5 — Encryption</h4><p>A5 is the family of stream ciphers used to encrypt and decrypt GSM radio traffic using Kc and frame-related inputs. A5/1 and A5/2 are older variants; A5/3 is a stronger later variant. Security depends on the cipher selected, implementation and network configuration. GSM encryption primarily protects the air interface, not necessarily the entire end-to-end path.</p><svg class="diagram" viewBox="0 0 900 230" role="img" aria-label="GSM authentication and cipher key derivation flow"><g font-family="Arial" text-anchor="middle" fill="currentColor"><rect x="25" y="35" width="200" height="65" rx="8" fill="#e5efff" stroke="#6387bd"/><rect x="350" y="35" width="200" height="65" rx="8" fill="#e5f4e9" stroke="#559a72"/><rect x="675" y="35" width="200" height="65" rx="8" fill="#fff0d9" stroke="#bf8b40"/><g font-size="16"><text x="125" y="61">Network sends</text><text x="125" y="82">RAND</text><text x="450" y="61">SIM calculates</text><text x="450" y="82">SRES and Kc</text><text x="775" y="61">Network checks</text><text x="775" y="82">SRES</text></g><path d="M225 68 H350 M550 68 H675" stroke="currentColor" stroke-width="2"/><path d="M340 62 l10 6 -10 6 M665 62 l10 6 -10 6" stroke="currentColor" fill="none" stroke-width="2"/><text x="450" y="150" font-size="17">Kc → A5 ciphering → protected radio link</text><text x="450" y="185" font-size="14">Ki remains stored securely in SIM and network authentication center</text></g></svg><h4>Algorithm roles at a glance</h4><table><thead><tr><th>Algorithm</th><th>Purpose</th><th>Input / output concept</th></tr></thead><tbody><tr><td>A3</td><td>Subscriber authentication</td><td>Ki + RAND → SRES</td></tr><tr><td>A8</td><td>Session cipher-key generation</td><td>Ki + RAND → Kc</td></tr><tr><td>A5</td><td>Radio-link encryption</td><td>Kc + frame inputs → keystream</td></tr></tbody></table><p><b>Security note:</b> These algorithms are presented for learning the GSM architecture. Modern cellular generations use different security procedures and algorithms.</p></section><section class="conclusion"><h3>Conclusion</h3><p>A3 authenticates the subscriber, A8 generates the cipher key Kc, and A5 encrypts GSM radio traffic. Together they provide authentication and air-interface confidentiality in GSM.</p></section></div>`,
+ exp9: `<div class="theory"><section class="aim"><h3>Aim</h3><p>To analyze multipath propagation and observe its effect on a received wireless signal.</p></section><section><h3>Theory</h3><h4>Multipath propagation</h4><p>In a wireless environment, a transmitted signal may reach the receiver by several paths due to reflection, diffraction and scattering. The received signal is the combination of multiple delayed and attenuated copies. These copies can add constructively or destructively, causing fluctuations in received amplitude and phase known as <b>multipath fading</b>.</p><svg class="diagram" viewBox="0 0 800 250" role="img" aria-label="Multipath radio propagation paths"><g font-family="Arial" fill="currentColor" stroke-width="2"><rect x="35" y="90" width="115" height="85" rx="8" fill="#e5efff" stroke="#6387bd"/><rect x="650" y="90" width="115" height="85" rx="8" fill="#e4f4e9" stroke="#559a72"/><text x="92" y="125" text-anchor="middle" font-size="16" stroke="none">Transmitter</text><text x="92" y="148" text-anchor="middle" font-size="13" stroke="none">Tx</text><text x="707" y="125" text-anchor="middle" font-size="16" stroke="none">Receiver</text><text x="707" y="148" text-anchor="middle" font-size="13" stroke="none">Rx</text><path d="M150 130 H650" stroke="#438b68"/><path d="M150 110 L400 25 L650 110" stroke="#527eb7" fill="none"/><path d="M150 155 L400 220 L650 155" stroke="#b77a35" fill="none"/><g font-size="14" stroke="none"><text x="400" y="18" text-anchor="middle">Reflected path</text><text x="400" y="115" text-anchor="middle">Direct path</text><text x="400" y="240" text-anchor="middle">Scattered / reflected path</text></g></g></svg><h4>Types of fading</h4><ul><li><b>Small-scale fading:</b> rapid variation over short distances or time due to multipath.</li><li><b>Large-scale fading:</b> average signal variation over longer distances, including path loss and shadowing.</li><li><b>Flat fading:</b> signal components across the signal bandwidth experience similar fading.</li><li><b>Frequency-selective fading:</b> different frequency components experience different attenuation due to delay spread.</li></ul><h4>Delay spread and coherence bandwidth</h4><p>Different paths arrive at different times, creating delay spread. If the signal bandwidth is much smaller than the channel's coherence bandwidth, fading is more likely to be flat. If the signal bandwidth exceeds coherence bandwidth, frequency-selective distortion may occur. The exact relationship depends on the delay profile and chosen statistical definition.</p><h4>Ways to reduce multipath effects</h4><ul><li>Antenna diversity or MIMO processing.</li><li>Equalization and appropriate OFDM-based transmission.</li><li>Careful antenna placement and line-of-sight improvement where possible.</li><li>Interleaving and coding to mitigate burst errors.</li></ul></section><section class="conclusion"><h3>Conclusion</h3><p>Multipath propagation creates multiple delayed signal copies that can strengthen or weaken the received signal. Understanding fading and delay spread helps explain wireless performance variations and motivates diversity, equalization and OFDM techniques.</p></section></div>`,
+ exp10: `<div class="theory"><section class="aim"><h3>Aim</h3><p>To analyze handover behavior as a mobile device moves between cells and observe signal measurements and handover events.</p></section><section><h3>Theory</h3><h4>Handover / handoff</h4><p>Handover is the transfer of an ongoing call or data session from one serving cell or base station to another, typically as the user moves or radio conditions change. It helps maintain service continuity and can also be triggered by load balancing or coverage optimization.</p><h4>Handover stages</h4><ol><li><b>Measurement:</b> the mobile and/or network measures serving and neighboring cell signal quality.</li><li><b>Decision:</b> the network evaluates configured criteria, thresholds and timers.</li><li><b>Execution:</b> radio resources are prepared and the connection is switched to the target cell.</li><li><b>Completion:</b> the target cell confirms the connection and old resources are released.</li></ol><h4>Common types</h4><ul><li><b>Hard handover:</b> break-before-make; the old link is released as the new one is established. Common in GSM and LTE procedures.</li><li><b>Soft handover:</b> make-before-break; a device can maintain links with multiple base stations during transition. Associated with some CDMA systems.</li><li><b>Horizontal handover:</b> between access points/cells using the same radio technology.</li><li><b>Vertical handover:</b> between different access technologies, such as cellular and Wi-Fi.</li></ul><h4>Signal metrics and decision factors</h4><p><b>RSSI</b> indicates received signal level. Cellular systems may also use RSRP, RSRQ and SINR to assess coverage and quality. Handover decisions can include signal thresholds, hysteresis, time-to-trigger, neighbor-cell information and network load. Hysteresis and timers help avoid rapid repeated handovers called <b>ping-pong</b>.</p><h4>Analysis observations</h4><p>During movement, record time, serving cell, neighbor cell measurements and the handover event. A successful handover should preserve the session with minimal interruption. A poor target choice, weak coverage or excessive delay may cause a dropped connection or interruption.</p><h4>Factors affecting handover</h4><ul><li>Speed and direction of the mobile device.</li><li>Cell overlap and signal-quality difference between serving and target cells.</li><li>Hysteresis, thresholds and time-to-trigger settings.</li><li>Network load, interference and backhaul/resource availability.</li></ul></section><section class="conclusion"><h3>Conclusion</h3><p>Handover maintains connectivity while a mobile device moves across cell boundaries. Measurements, decision criteria and execution timing determine whether the transition is smooth and reliable.</p></section></div>`
+};
+
+function copy(text, btn){
+  var done = function(){ var o = btn.textContent; btn.textContent = 'Copied ✓'; setTimeout(function(){ btn.textContent = o; }, 1500); };
+  var fallback = function(){
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { btn.textContent = 'Press Ctrl+C'; }
+    document.body.removeChild(ta);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+  else fallback();
+}
+
+function el(tag, cls, text){
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+var VIVA = {"exp1": [["What is the electromagnetic spectrum?", "The complete range of electromagnetic waves arranged according to frequency or wavelength."], ["What is the relation between frequency and wavelength?", "c = fλ. In vacuum, frequency and wavelength are inversely proportional."], ["Why is spectrum allocation required?", "To assign frequency bands to services and reduce harmful interference."], ["Which frequency bands are used for mobile communication?", "Common cellular deployments use bands in the UHF range and, for newer systems, some SHF/mmWave bands."], ["What happens to wavelength when frequency increases?", "Wavelength decreases, because c = fλ."], ["What is the difference between a radio wave's frequency and wavelength?", "Frequency is the number of cycles per second, measured in hertz (Hz). Wavelength is the distance covered in one cycle, measured in metres. They are related by c = fλ."], ["What is the electromagnetic spectrum?", "It is the complete range of electromagnetic radiation, arranged by frequency or wavelength, from radio waves to gamma rays."], ["Why is radio spectrum considered a limited resource?", "Only a finite range of frequencies is practically available, and nearby services can interfere if spectrum is not coordinated."], ["What is spectrum allocation?", "It is the regulatory process of assigning frequency bands to specific services, such as mobile, broadcasting, satellite or Wi-Fi."], ["What is the role of ITU in spectrum management?", "The International Telecommunication Union coordinates international radio-frequency use and helps prevent harmful interference across countries."]], "exp2": [["What is a basic communication system?", "A system that transfers information from a source to a destination through a transmitter, channel and receiver."], ["What are the main blocks of a communication system?", "Source, input transducer, transmitter, communication channel, receiver, output transducer and destination."], ["What is modulation?", "Modulation is the process of varying a carrier signal according to the information signal."], ["What is noise?", "An unwanted disturbance that affects the transmitted signal during communication."], ["What is the function of a receiver?", "It processes the received signal, demodulates or decodes it, and recovers the information."], ["Why is a carrier signal used in communication?", "A carrier is a high-frequency signal that can be modified to carry information and is suitable for efficient transmission through a channel or antenna."], ["What is the difference between analog and digital communication?", "Analog communication sends continuously varying signals, while digital communication represents information using discrete symbols or bits."], ["Differentiate modulation and demodulation.", "Modulation places information onto a carrier at the transmitter. Demodulation extracts the information from the received modulated carrier."], ["What is bandwidth in a communication system?", "Bandwidth is the range of frequencies occupied or passed by a signal or channel, usually measured in hertz."], ["What is signal-to-noise ratio (SNR)?", "SNR is the ratio of signal power to noise power. A higher SNR generally indicates a cleaner received signal."]], "exp3": [["What is frequency reuse?", "Using the same frequency channels in different cells separated sufficiently to limit co-channel interference."], ["What is a cell in a cellular network?", "A geographic coverage area served by a base station."], ["What is a cluster?", "A group of adjacent cells in which the available frequency channels are assigned before the pattern repeats."], ["What is co-channel interference?", "Interference between cells that use the same frequency channel."], ["What is the reuse distance?", "The distance between the centers of two cells using the same frequency set."], ["Why are cells often represented as hexagons in cellular planning?", "Hexagons tessellate without gaps and approximate circular coverage, making them convenient for frequency-planning diagrams."], ["What is the cluster size N?", "N is the number of cells in one frequency-reuse cluster. For a hexagonal layout, N = i² + ij + j², where i and j are non-negative integers."], ["How is the frequency reuse ratio defined?", "The reuse ratio is commonly expressed as Q = D/R, where D is co-channel reuse distance and R is cell radius; for a hexagonal system Q = √(3N)."], ["What is the trade-off when cluster size increases?", "A larger cluster generally reduces co-channel interference but gives each cell fewer channels for a fixed total spectrum, reducing capacity."], ["What is sectoring and why is it used?", "Sectoring divides a cell into directional sectors using antennas. It can reduce interference and improve capacity, though it requires additional equipment and planning."]], "exp4": [["What is Wi-Fi scanning?", "The process of discovering nearby wireless access points and collecting information such as SSID, channel and signal strength."], ["What does SSID mean?", "Service Set Identifier; the network name advertised by a Wi-Fi access point."], ["What is RSSI?", "Received Signal Strength Indicator, a measurement of received radio signal strength."], ["Why analyze Wi-Fi channels?", "To identify channel overlap or congestion and choose a channel with less interference."], ["What is the 2.4 GHz Wi-Fi channel overlap issue?", "Many 2.4 GHz channels overlap; commonly used non-overlapping channel sets include 1, 6 and 11 where the regulatory plan allows."], ["How can a Wi-Fi scanner identify a nearby access point?", "It listens for wireless beacon or probe-response frames and extracts fields such as SSID, BSSID, channel and signal level."], ["What is BSSID and how is it different from SSID?", "SSID is the advertised network name. BSSID identifies a particular access point radio, usually by its MAC address."], ["What does a Wi-Fi channel number represent?", "It identifies a center frequency or channel allocation within a Wi-Fi band; the exact frequency depends on the band and channel."], ["Why are channels 1, 6 and 11 often recommended for 2.4 GHz Wi-Fi?", "In many 20 MHz channel plans, they are separated enough to avoid overlapping with one another, reducing adjacent-channel interference."], ["Why might a channel with fewer networks still perform poorly?", "Interference from non-Wi-Fi devices, weak signal, wide channel use, hidden nodes, congestion or poor backhaul can still reduce performance."]], "exp5": [["What is path loss?", "The reduction in radio signal power as it propagates from transmitter to receiver."], ["Why does RSSI usually decrease with distance?", "The signal spreads over a larger area and experiences path loss; obstacles can add attenuation."], ["What is attenuation?", "A reduction in signal strength as it travels through a medium or obstacle."], ["How can obstacles affect Wi-Fi?", "Walls, furniture and other objects may absorb, reflect or scatter radio waves, weakening the received signal."], ["Does distance always cause a perfectly smooth RSSI decrease?", "No. Reflections, interference and multipath can cause local fluctuations."], ["What is the difference between RSSI and SNR?", "RSSI indicates received signal level, while SNR compares signal power with noise power. A strong RSSI can still have poor quality if noise is high."], ["What is the log-distance path-loss model?", "It models path loss as increasing with logarithm of distance: PL(d) = PL(d0) + 10n log10(d/d0), with n representing the path-loss exponent."], ["What is free-space path loss?", "It is the reduction in signal power during propagation through unobstructed free space, depending on distance and frequency."], ["What is multipath fading and how can it affect RSSI?", "Multipath fading occurs when delayed copies of a signal combine. They may reinforce or cancel, causing RSSI to fluctuate across locations."], ["How can Wi-Fi signal strength be improved?", "Move closer to the access point, reduce obstacles, position it centrally and elevated, and select a less congested channel or band."]], "exp6": [["What is a cellular network?", "A wireless network divided into cells, each served by a base station to provide mobile connectivity."], ["What is the main difference between 2G and 3G?", "2G primarily introduced digital voice and messaging, while 3G expanded mobile data capability."], ["Which multiple access techniques are associated with GSM?", "GSM uses FDMA to divide spectrum into carriers and TDMA to divide each carrier into time slots."], ["What is LTE?", "Long Term Evolution, a 4G cellular technology designed for high-speed packet data and efficient radio access."], ["Name two important 5G technologies.", "Massive MIMO and beamforming; 5G also supports flexible numerology and network slicing."], ["What are FDMA and TDMA in GSM?", "FDMA divides spectrum into frequency carriers; TDMA divides each carrier into repeating time slots assigned to users."], ["What is the purpose of a base station in a cellular network?", "It provides radio coverage to a cell and communicates wirelessly with mobile devices while connecting them to the wider network."], ["What is the difference between a handover and roaming?", "Handover transfers an active connection between cells or access points. Roaming allows a subscriber to use a network outside their home network, subject to agreements."], ["What is the main idea of MIMO?", "Multiple antennas transmit and/or receive signals to improve throughput, reliability or coverage using spatial processing."], ["What is beamforming in 5G?", "Beamforming directs radio energy toward a device using antenna-array processing, improving link quality and reducing unwanted radiation in other directions."]], "exp7": [["What is Bluetooth?", "A short-range wireless technology operating in the 2.4 GHz ISM band for connecting devices."], ["What is Bluetooth pairing?", "The process of establishing trust and security information between Bluetooth devices."], ["What is bonding?", "Storing pairing keys so devices can reconnect securely later."], ["What is a Bluetooth piconet?", "A small Bluetooth network organized around one central/master device and connected peripheral/slave devices."], ["What is the difference between Bluetooth Classic and BLE?", "Classic is common for continuous data and audio links; Bluetooth Low Energy is designed for lower-power data exchange."], ["Which frequency band does Bluetooth use?", "Bluetooth operates in the 2.4 GHz ISM band, using frequency hopping to reduce the effect of interference."], ["What is Bluetooth frequency hopping?", "The radio changes channels rapidly according to a defined hopping sequence, helping avoid persistent interference on one frequency."], ["What is the role of a Bluetooth profile?", "A profile defines rules and services for a particular use case, such as audio streaming or hands-free operation."], ["What is the difference between Bluetooth Classic and Bluetooth Low Energy?", "Classic is commonly used for continuous data and audio applications; BLE is optimized for low-power, intermittent data exchange."], ["Why is Bluetooth suitable for short-range personal-area networks?", "It provides relatively low-power wireless connectivity for nearby devices such as phones, headsets, sensors and peripherals."]], "exp8": [["What is the purpose of A3 in GSM?", "A3 is used for subscriber authentication by producing the signed response SRES from Ki and RAND."], ["What is the purpose of A8?", "A8 derives the cipher key Kc using the subscriber key Ki and random challenge RAND."], ["What is the purpose of A5?", "A5 is the family of ciphers used to encrypt GSM radio-link traffic."], ["What is RAND?", "A random challenge sent by the network during authentication."], ["Is Ki transmitted over the air?", "No. Ki remains stored in the SIM and the network authentication center."], ["What is the GSM authentication procedure in brief?", "The network sends RAND; the SIM uses Ki and the authentication algorithm to calculate SRES. The network compares the response to authenticate the subscriber."], ["What are Ki and RAND in GSM?", "Ki is the secret subscriber authentication key stored securely in the SIM and network AuC. RAND is a random challenge sent by the network."], ["What is SRES?", "Signed Response (SRES) is the authentication response computed by the SIM from the secret key Ki and challenge RAND."], ["How are A3, A8 and A5 different?", "A3 computes the authentication response, A8 derives the cipher key Kc, and A5 encrypts traffic over the GSM radio link."], ["Why is the secret key Ki never sent over the air?", "Keeping Ki secret prevents an eavesdropper from directly obtaining the subscriber's long-term authentication key."]], "exp9": [["What is multipath propagation?", "The arrival of multiple delayed and attenuated copies of a signal through different propagation paths."], ["What causes multipath?", "Reflection, diffraction and scattering from buildings, terrain and other objects."], ["What is fading?", "Variation in received signal amplitude or power caused by propagation effects such as multipath."], ["What is constructive interference?", "When signal components combine in phase and increase the resultant amplitude."], ["What is destructive interference?", "When signal components combine out of phase and reduce the resultant amplitude."], ["What is the difference between large-scale and small-scale fading?", "Large-scale fading describes average signal variation over longer distances due to path loss and shadowing. Small-scale fading is rapid fluctuation from multipath."], ["What is shadowing?", "Shadowing is slower variation in received power caused by obstacles such as buildings, hills or walls blocking or attenuating the path."], ["How does constructive interference occur?", "When arriving signal components have phases that align, their amplitudes add and the resultant signal becomes stronger."], ["How does destructive interference occur?", "When components arrive with opposing phases, they partially or nearly completely cancel, reducing the received signal."], ["What is Doppler shift?", "It is the apparent change in received frequency caused by relative motion between transmitter and receiver; it can affect rapidly moving wireless devices."]], "exp10": [["What is handover (handoff)?", "The transfer of an ongoing mobile connection from one cell or base station to another."], ["Why is handover needed?", "To maintain service as a mobile user moves and the serving cell’s signal becomes weaker."], ["What is a handover trigger?", "A condition such as signal strength, signal quality or network policy that initiates handover evaluation."], ["What is the difference between hard and soft handover?", "Hard handover breaks the old connection before establishing the new one; soft handover can maintain connections to multiple base stations during the transition, where supported."], ["What can cause a failed handover?", "Poor coverage, delayed decisions, unavailable target-cell resources or rapidly changing signal conditions."], ["What is the difference between intra-cell and inter-cell handover?", "Intra-cell handover changes a channel or resource within the same cell. Inter-cell handover transfers service to a different cell."], ["What is hysteresis in handover?", "Hysteresis is a margin between serving- and neighboring-cell measurements that helps prevent unnecessary handovers and ping-pong effects."], ["What is the ping-pong effect?", "It is repeated handover back and forth between cells due to fluctuating measurements or overly sensitive thresholds."], ["What is the role of time-to-trigger?", "The condition must remain satisfied for a configured duration before a handover decision, filtering short-lived signal fluctuations."], ["Name important measurements used for LTE/5G handover decisions.", "Common measurements include RSRP, RSRQ and SINR, along with neighbor-cell measurements and configured thresholds."]]};
+
+function appendViva(ex, container) {
+  var questions = VIVA[ex.id] || [];
+  if (!questions.length) return;
+  var section = el('section', 'viva-section');
+  var heading = el('h3', '', 'Viva Questions & Answers');
+  section.appendChild(heading);
+  var intro = el('p', 'viva-intro', 'Viva preparation — all questions and answers are displayed below for direct revision.');
+  section.appendChild(intro);
+  questions.forEach(function(item, index) {
+    var entry = el('div', 'viva-item');
+    var question = el('p', 'viva-question', (index + 1) + '. ' + item[0]);
+    var answer = el('p', 'viva-answer', 'Answer: ' + item[1]);
+    entry.appendChild(question);
+    entry.appendChild(answer);
+    section.appendChild(entry);
+  });
+  container.appendChild(section);
+}
+
+function render(){
+  var id = (location.hash || '').slice(1);
+  var ex = EXPS.filter(function(x){ return x.id === id; })[0] || EXPS[1];
+  var nav = document.getElementById('nav');
+  nav.innerHTML = '';
+  EXPS.forEach(function(x){
+    var a = el('a', x.id === ex.id ? 'on' : '', 'Exp ' + x.id.slice(3));
+    a.href = '#' + x.id;
+    nav.appendChild(a);
+  });
+  var v = document.getElementById('view');
+  v.innerHTML = '';
+  v.appendChild(el('h2', '', 'Experiment ' + ex.id.slice(3) + ' – ' + ex.t));
+  if (ex.none){
+    if (THEORY[ex.id]) { var theoryBox = el('div'); theoryBox.innerHTML = THEORY[ex.id]; v.appendChild(theoryBox); }
+    else { v.appendChild(el('div', 'note', 'No code for this experiment (study / observation experiment).')); }
+    appendViva(ex, v);
+    return;
+  }
+  var src = document.getElementById('src-' + ex.id);
+  var code = src ? src.textContent.replace(/^\n+/, '').replace(/\s+$/, '') + '\n' : '';
+  // Keep setup/install and runnable code at the top; put the theory and diagrams afterward.
+  var row = el('div', 'row');
+  row.appendChild(el('code', '', ex.i));
+  var b1 = el('button', '', 'Copy install'); b1.onclick = function(){ copy(ex.i, b1); };
+  row.appendChild(b1);
+  v.appendChild(row);
+  if (!code){
+    v.appendChild(el('div', 'note', 'This experiment’s code isn’t on the page yet. Copy it from the chat for now.'));
+  } else {
+    var bar = el('div', 'bar');
+    bar.appendChild(el('span', '', 'Python · ' + code.split('\n').length + ' lines'));
+    var b2 = el('button', '', 'Copy code'); b2.onclick = function(){ copy(code, b2); };
+    bar.appendChild(b2);
+    v.appendChild(bar);
+    var pre = el('pre'); pre.appendChild(el('code', '', code));
+    v.appendChild(pre);
+  }
+  if (THEORY[ex.id]) { var theoryBox = el('div'); theoryBox.innerHTML = THEORY[ex.id]; v.appendChild(theoryBox); }
+  appendViva(ex, v);
+}
+window.addEventListener('hashchange', render);
+render();
+</script>
+</body>
+</html>
